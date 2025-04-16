@@ -1,6 +1,7 @@
 #include <grpcpp/grpcpp.h>
 
 #include <iostream>
+#include <opencv2/opencv.hpp>
 #include <vector>
 
 #include "EIHCameraApiClient.hpp"
@@ -11,10 +12,25 @@ int main() {
 
   EIHCameraApiClient client(server_address);
 
-  //   client.isCameraConnected();
+  bool isConnected = client.isCameraConnected();
+
+  auto [format, encoding, width, height, additional_info] =
+      client.getImageConfiguration();
+  std::cout << "Image Configuration:" << std::endl;
+  std::cout << "Format: " << format << std::endl;
+  std::cout << "Encoding: " << encoding << std::endl;
+  std::cout << "Width: " << width << std::endl;
+  std::cout << "Height: " << height << std::endl;
+  std::cout << "Additional Info: " << additional_info << std::endl;
 
   while (true) {
-    client.getImageData();
+    std::vector<unsigned char> byteData = client.getImageData();
+    if (!byteData.empty()) {
+      cv::Mat image = cv::imdecode(cv::Mat(byteData), cv::IMREAD_COLOR);
+      cv::resize(image, image, cv::Size(480, 360));
+      cv::imshow("Received Image", image);
+      cv::waitKey(1);
+    }
   }
 
   return 0;

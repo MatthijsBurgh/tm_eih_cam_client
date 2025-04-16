@@ -1,7 +1,6 @@
 #include "EIHCameraApiClient.hpp"
 
 #include <iostream>
-#include <opencv2/opencv.hpp>
 
 namespace TmEIHCamera {
 
@@ -14,17 +13,17 @@ EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
   m_Stub = EIHCameraApi::NewStub(channel);
 }
 
-grpc::Status EIHCameraApiClient::isCameraConnected() {
+bool EIHCameraApiClient::isCameraConnected() {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::isCameraConnectedResponse response;
 
   grpc::Status status = m_Stub->isCameraConnected(&context, request, &response);
+  bool isConnected = response.iscameraconnected();
   std::cout << "----------------------------------------------------------"
             << std::endl;
   if (status.ok()) {
-    std::cout << "Camera connection status: " << response.iscameraconnected()
-              << std::endl;
+    std::cout << "Camera connection status: " << isConnected << std::endl;
     std::cout << "Connection message: " << response.connection_message()
               << std::endl;
   } else {
@@ -33,9 +32,10 @@ grpc::Status EIHCameraApiClient::isCameraConnected() {
   }
   std::cout << "----------------------------------------------------------"
             << std::endl;
-  return status;
+  // return status;
+  return isConnected;
 }
-
+/*
 grpc::Status EIHCameraApiClient::getIntrinsics() {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
@@ -127,47 +127,26 @@ grpc::Status EIHCameraApiClient::getHandEyeParameters() {
 
   return status;
 }
+*/
 
-grpc::Status EIHCameraApiClient::getImageData() {
+std::vector<unsigned char> EIHCameraApiClient::getImageData() {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::Camera_Image_Data response;
   grpc::Status status = m_Stub->getImageData(&context, request, &response);
+  std::vector<unsigned char> byteData(response.encodestring().begin(),
+                                      response.encodestring().end());
 
+  std::string encodeString(response.encodestring().begin(),
+                           response.encodestring().end());
+  std::cout << "----------------------------------------------------------"
+            << std::endl;
   if (status.ok()) {
-    std::cout << "----------------------------------------------------------"
-              << std::endl;
-    std::vector<unsigned char> byteData(response.encodestring().begin(),
-                                        response.encodestring().end());
     if (!byteData.empty()) {
-      cv::Mat image = cv::imdecode(cv::Mat(byteData), cv::IMREAD_COLOR);
-
-      if (!image.empty()) {
-        cv::resize(image, image, cv::Size(480, 360));
-
-        cv::imshow("Received Image", image);
-        cv::waitKey(1);
-        // cv::destroyAllWindows();
-      } else {
-        std::cerr << "Failed to decode image!" << std::endl;
-      }
+      std::cout << "Image Data Retrieved Successfully" << std::endl;
     } else {
       std::cout << "byteData is empty!!!!!" << std::endl;
-      std::cout << "----------------------------------------------------------"
-                << std::endl;
-      return grpc::Status();
     }
-    if (byteData.empty()) {
-      std::cout << "byteData is empty!!!!!" << std::endl;
-      std::cout << "----------------------------------------------------------"
-                << std::endl;
-      return grpc::Status();
-    }
-
-    std::string encodeString(response.encodestring().begin(),
-                             response.encodestring().end());
-    std::cout << "Image Data Retrieved Successfully" << std::endl;
-    // std::cout << "Encode String Size: " << encodeString << std::endl;
   } else {
     std::cout << "RPC failed: " << status.error_code() << ": "
               << status.error_message() << std::endl;
@@ -175,9 +154,59 @@ grpc::Status EIHCameraApiClient::getImageData() {
   std::cout << "----------------------------------------------------------"
             << std::endl;
 
-  return status;
+  return byteData;
+
+  /*
+      if (status.ok()) {
+        std::cout <<
+        "----------------------------------------------------------"
+                  << std::endl;
+        std::vector<unsigned char> byteData(response.encodestring().begin(),
+                                            response.encodestring().end());
+        if (!byteData.empty()) {
+          cv::Mat image = cv::imdecode(cv::Mat(byteData), cv::IMREAD_COLOR);
+
+          if (!image.empty()) {
+            cv::resize(image, image, cv::Size(480, 360));
+
+            cv::imshow("Received Image", image);
+            cv::waitKey(1);
+            // cv::destroyAllWindows();
+          } else {
+            std::cerr << "Failed to decode image!" << std::endl;
+          }
+        } else {
+          std::cout << "byteData is empty!!!!!" << std::endl;
+          std::cout <<
+          "----------------------------------------------------------"
+                    << std::endl;
+          return grpc::Status();
+        }
+        if (byteData.empty()) {
+          std::cout << "byteData is empty!!!!!" << std::endl;
+          std::cout <<
+          "----------------------------------------------------------"
+                    << std::endl;
+          return grpc::Status();
+        }
+
+        std::string encodeString(response.encodestring().begin(),
+                                 response.encodestring().end());
+        std::cout << "Image Data Retrieved Successfully" << std::endl;
+        // std::cout << "Encode String Size: " << encodeString << std::endl;
+      } else {
+        std::cout << "RPC failed: " << status.error_code() << ": "
+                  << status.error_message() << std::endl;
+      }
+      std::cout << "----------------------------------------------------------"
+                << std::endl;
+
+      return status;
+    */
 }
-grpc::Status EIHCameraApiClient::getImageConfiguration() {
+
+std::tuple<std::string, std::string, int, int, std::string>
+EIHCameraApiClient::getImageConfiguration() {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
 
@@ -187,21 +216,27 @@ grpc::Status EIHCameraApiClient::getImageConfiguration() {
   std::cout << "----------------------------------------------------------"
             << std::endl;
   if (status.ok()) {
-    std::cout << "Image configuration retrieved successfully:" << std::endl;
-    std::cout << "  Image Type: " << response.imagetype() << std::endl;
-    std::cout << "  Image Size: " << response.imagesize() << std::endl;
-    std::cout << "  Image Width: " << response.imagewidth() << std::endl;
-    std::cout << "  Image Height: " << response.imageheight() << std::endl;
-    std::cout << "  Pixel Format: " << response.pixelformat() << std::endl;
+    // std::cout << "Image configuration retrieved successfully:" << std::endl;
+    // std::cout << "  Image Type: " << response.imagetype() << std::endl;
+    // std::cout << "  Image Size: " << response.imagesize() << std::endl;
+    // std::cout << "  Image Width: " << response.imagewidth() << std::endl;
+    // std::cout << "  Image Height: " << response.imageheight() << std::endl;
+    // std::cout << "  Pixel Format: " << response.pixelformat() << std::endl;
+    // std::cout << "----------------------------------------------------------"
+    //           << std::endl;
+    return std::make_tuple(response.imagetype(), response.imagesize(),
+                           response.imagewidth(), response.imageheight(),
+                           response.pixelformat());
   } else {
     std::cout << "RPC failed: " << status.error_code() << ": "
               << status.error_message() << std::endl;
+    std::cout << "----------------------------------------------------------"
+              << std::endl;
+    return std::make_tuple("", "", 0, 0, "");
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
+
+/*
 grpc::Status EIHCameraApiClient::terminateCameraConnection() {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
@@ -671,5 +706,5 @@ grpc::Status EIHCameraApiClient::setImageSize() {
 
   return status;
 }
-
+*/
 }  // namespace TmEIHCamera
