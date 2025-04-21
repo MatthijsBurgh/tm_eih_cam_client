@@ -13,19 +13,27 @@
 
 namespace TmEIHCamera {
 
+enum StatusCode { FAIL = -1, SUCCESS = 0 };
+
+struct GrpcResult {
+  StatusCode status;
+  std::string error_message;
+};
+
 class EIHCameraApiClient {
  private:
-  std::unique_ptr<EIHCameraApi::Stub> m_Stub;  // stub
+  std::unique_ptr<EIHCameraApi::Stub> _stub;  // stub
 
  public:
   EIHCameraApiClient() = default;
   explicit EIHCameraApiClient(const std::string &server_address);
 
-  bool isCameraConnected();
-  std::vector<unsigned char> getImageData();
+  bool isCameraConnected(GrpcResult &result, bool &is_connected);
+  bool getImageData(GrpcResult &result, std::vector<unsigned char> &byte_data);
   // to do
-  std::tuple<std::string, std::string, int, int, std::string>
-  getImageConfiguration();
+  // bool getImageConfiguration(
+  //     GrpcResult &result,
+  //     std::tuple<std::string, std::string, int, int, std::string>);
 
   //   grpc::Status isCameraConnected();
   //   grpc::Status getIntrinsics();
