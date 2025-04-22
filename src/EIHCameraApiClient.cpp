@@ -1,4 +1,4 @@
-#include "EIHCameraApiClient.hpp"
+#include "EIHCameraApiClient.h"
 
 #include <iostream>
 #include <memory>
@@ -148,40 +148,29 @@ bool EIHCameraApiClient::getImageData(GrpcResult &result,
   }
 }
 
-// std::tuple<std::string, std::string, int, int, std::string>
-// EIHCameraApiClient::getImageConfiguration() {
-//   grpc::ClientContext context;
-//   const google::protobuf::Empty request;
+bool EIHCameraApiClient::getImageConfiguration(
+    GrpcResult &result, ImageConfiguration &image_config) {
+  grpc::ClientContext context;
+  const google::protobuf::Empty request;
 
-//   TmEIHCamera::Camera_Image_Configuration response;
-//   grpc::Status status =
-//       _stub->getImageConfiguration(&context, request, &response);
-//   std::cout << "----------------------------------------------------------"
-//             << std::endl;
-//   if (status.ok()) {
-//     // std::cout << "Image configuration retrieved successfully:" <<
-//     std::endl;
-//     // std::cout << "  Image Type: " << response.imagetype() << std::endl;
-//     // std::cout << "  Image Size: " << response.imagesize() << std::endl;
-//     // std::cout << "  Image Width: " << response.imagewidth() << std::endl;
-//     // std::cout << "  Image Height: " << response.imageheight() <<
-//     std::endl;
-//     // std::cout << "  Pixel Format: " << response.pixelformat() <<
-//     std::endl;
-//     // std::cout <<
-//     "----------------------------------------------------------"
-//     //           << std::endl;
-//     return std::make_tuple(response.imagetype(), response.imagesize(),
-//                            response.imagewidth(), response.imageheight(),
-//                            response.pixelformat());
-//   } else {
-//     std::cout << "RPC failed: " << status.error_code() << ": "
-//               << status.error_message() << std::endl;
-//     std::cout << "----------------------------------------------------------"
-//               << std::endl;
-//     return std::make_tuple("", "", 0, 0, "");
-//   }
-// }
+  TmEIHCamera::Camera_Image_Configuration response;
+  grpc::Status status =
+      _stub->getImageConfiguration(&context, request, &response);
+
+  if (status.ok()) {
+    image_config.ImageType = response.imagetype();
+    image_config.ImageSize = response.imagesize();
+    image_config.ImageWidth = response.imagewidth();
+    image_config.ImageHeight = response.imageheight();
+    image_config.PixelFormat = response.pixelformat();
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
 
 /*
 grpc::Status EIHCameraApiClient::terminateCameraConnection() {

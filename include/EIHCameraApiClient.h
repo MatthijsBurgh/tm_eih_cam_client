@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "EIHCameraAPI.grpc.pb.h"
+#include "EIHConfig.h"
 
 namespace TmEIHCamera {
 
@@ -31,9 +32,8 @@ class EIHCameraApiClient {
   bool isCameraConnected(GrpcResult &result, bool &is_connected);
   bool getImageData(GrpcResult &result, std::vector<unsigned char> &byte_data);
   // to do
-  // bool getImageConfiguration(
-  //     GrpcResult &result,
-  //     std::tuple<std::string, std::string, int, int, std::string>);
+  bool getImageConfiguration(GrpcResult &result,
+                             ImageConfiguration &image_config);
 
   //   grpc::Status isCameraConnected();
   //   grpc::Status getIntrinsics();

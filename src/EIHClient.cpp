@@ -2,7 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "EIHCameraApiClient.hpp"
+#include "EIHCameraApiClient.h"
 using namespace TmEIHCamera;
 
 int main() {
@@ -10,21 +10,23 @@ int main() {
 
   EIHCameraApiClient client(server_address);
   GrpcResult result;
+
   bool is_connected = false;
   client.isCameraConnected(result, is_connected);
-  std::cout << "isCameraConnected: " << is_connected << std::endl;
-  // std::cout << "grpc status: " << result.status << std::endl;
+  std::cout << "grpc status: " << result.status << std::endl;
   std::cout << "grpc error_message: " << result.error_message << std::endl;
-  /*
-    auto [format, encoding, width, height, additional_info] =
-        client.getImageConfiguration();
-    std::cout << "Image Configuration:" << std::endl;
-    std::cout << "Format: " << format << std::endl;
-    std::cout << "Encoding: " << encoding << std::endl;
-    std::cout << "Width: " << width << std::endl;
-    std::cout << "Height: " << height << std::endl;
-    std::cout << "Additional Info: " << additional_info << std::endl;
-  */
+  std::cout << "isCameraConnected: " << is_connected << std::endl;
+
+  ImageConfiguration image_config;
+  client.getImageConfiguration(result, image_config);
+  std::cout << "grpc status: " << result.status << std::endl;
+  std::cout << "grpc error_message: " << result.error_message << std::endl;
+  std::cout << "ImageType: " << image_config.ImageType << std::endl;
+  std::cout << "ImageSize: " << image_config.ImageSize << std::endl;
+  std::cout << "ImageWidth: " << image_config.ImageWidth << std::endl;
+  std::cout << "ImageHeight: " << image_config.ImageHeight << std::endl;
+  std::cout << "PixelFormat: " << image_config.PixelFormat << std::endl;
+
   std::vector<unsigned char> byte_data;
   while (true) {
     client.getImageData(result, byte_data);
