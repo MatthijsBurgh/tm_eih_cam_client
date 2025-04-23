@@ -29,11 +29,14 @@ class EIHCameraApiClient {
   EIHCameraApiClient() = default;
   explicit EIHCameraApiClient(const std::string &server_address);
 
+  // to do namespace & connection_message
   bool isCameraConnected(GrpcResult &result, bool &is_connected);
   bool getImageData(GrpcResult &result, std::vector<unsigned char> &byte_data);
-  // to do
   bool getImageConfiguration(GrpcResult &result,
-                             ImageConfiguration &image_config);
+                             TmEIHConfig::Image::Configuration &image_config);
+
+  // bool getHandEyeParameters(GrpcResult &result,
+  //                           TmEIHConfig::HandEyeArray &hand_eye_array);
 
   //   grpc::Status isCameraConnected();
   //   grpc::Status getIntrinsics();

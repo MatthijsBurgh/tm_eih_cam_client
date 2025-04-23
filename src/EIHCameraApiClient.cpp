@@ -14,6 +14,7 @@ EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
   _stub = EIHCameraApi::NewStub(channel);
 }
 
+// to do namespace TmEIHConfig & connection_message
 bool EIHCameraApiClient::isCameraConnected(GrpcResult &result,
                                            bool &is_connected) {
   grpc::ClientContext context;
@@ -96,34 +97,30 @@ grpc::Status EIHCameraApiClient::getIntrinsics() {
             << std::endl;
   return status;
 }
-
-grpc::Status EIHCameraApiClient::getHandEyeParameters() {
+*/
+/*
+bool EIHCameraApiClient::getHandEyeParameters(
+    GrpcResult &result, TmEIHConfig::HandEyeArray &hand_eye_array) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::Camera_HandEyeParameters response;
-
   grpc::Status status =
-      m_Stub->getHandEyeParameters(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-  if (status.ok()) {
-    std::cout << "Hand-eye parameters retrieved successfully." << std::endl;
-    const TmEIHCamera::HandEyeArray &handEyeArray = response.handeyearray();
-    std::cout << "Hand-eye array: " << std::endl;
-    std::cout << "  handeye_x: " << handEyeArray.handeye_x() << std::endl;
-    std::cout << "  handeye_y: " << handEyeArray.handeye_y() << std::endl;
-    std::cout << "  handeye_z: " << handEyeArray.handeye_z() << std::endl;
-    std::cout << "  handeye_rx: " << handEyeArray.handeye_rx() << std::endl;
-    std::cout << "  handeye_ry: " << handEyeArray.handeye_ry() << std::endl;
-    std::cout << "  handeye_rz: " << handEyeArray.handeye_rz() << std::endl;
-  } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
-  }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+      _stub->getHandEyeParameters(&context, request, &response);
 
-  return status;
+  if (status.ok()) {
+    // hand_eye_array = response.handeyearray();
+    hand_eye_array.handeye_x = response.handeyearray().handeye_x();
+    hand_eye_array.handeye_y = response.handeyearray().handeye_y();
+    hand_eye_array.handeye_z = response.handeyearray().handeye_z();
+    hand_eye_array.handeye_rx = response.handeyearray().handeye_rx();
+    hand_eye_array.handeye_ry = response.handeyearray().handeye_ry();
+    hand_eye_array.handeye_rz = response.handeyearray().handeye_rz();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
 }
 */
 
@@ -149,7 +146,7 @@ bool EIHCameraApiClient::getImageData(GrpcResult &result,
 }
 
 bool EIHCameraApiClient::getImageConfiguration(
-    GrpcResult &result, ImageConfiguration &image_config) {
+    GrpcResult &result, TmEIHConfig::Image::Configuration &image_config) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
 
