@@ -30,7 +30,8 @@ class EIHCameraApiClient {
   explicit EIHCameraApiClient(const std::string &server_address);
 
   // to do namespace & connection_message
-  bool isCameraConnected(GrpcResult &result, bool &is_connected);
+  bool isCameraConnected(GrpcResult &result,
+                         TmEIHConfig::CameraConnection &cam_connect);
   bool getImageData(GrpcResult &result, std::vector<unsigned char> &byte_data);
   bool getImageConfiguration(GrpcResult &result,
                              TmEIHConfig::Image::Configuration &image_config);

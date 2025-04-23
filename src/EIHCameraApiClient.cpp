@@ -5,6 +5,8 @@
 
 namespace TmEIHCamera {
 
+// To do : all in one class TmEIHCamera(config struct & func) ?
+
 EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
   grpc::ChannelArguments channel_args;
   channel_args.SetMaxReceiveMessageSize(
@@ -15,16 +17,16 @@ EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
 }
 
 // to do namespace TmEIHConfig & connection_message
-bool EIHCameraApiClient::isCameraConnected(GrpcResult &result,
-                                           bool &is_connected) {
+bool EIHCameraApiClient::isCameraConnected(
+    GrpcResult &result, TmEIHConfig::CameraConnection &cam_connect) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::isCameraConnectedResponse response;
-
   grpc::Status status = _stub->isCameraConnected(&context, request, &response);
-  is_connected = response.iscameraconnected();
 
   if (status.ok()) {
+    cam_connect.is_connected = response.iscameraconnected();
+    cam_connect.connection_message = response.connection_message();
     result.status = StatusCode::SUCCESS;
     result.error_message.clear();
     return true;

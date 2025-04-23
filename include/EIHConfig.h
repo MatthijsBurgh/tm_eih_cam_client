@@ -5,7 +5,7 @@
 // ref from EIHCamera.proto format
 namespace TmEIHConfig {
 
-struct IsCameraConnectedResponse {
+struct CameraConnection {
   bool is_connected;
   std::string connection_message;
 };

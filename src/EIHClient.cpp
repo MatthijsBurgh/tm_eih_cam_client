@@ -11,11 +11,13 @@ int main() {
   EIHCameraApiClient client(server_address);
   GrpcResult result;
 
-  bool is_connected = false;
-  client.isCameraConnected(result, is_connected);
+  TmEIHConfig::CameraConnection cam_connect;
+  client.isCameraConnected(result, cam_connect);
   std::cout << "grpc status: " << result.status << std::endl;
   std::cout << "grpc error_message: " << result.error_message << std::endl;
-  std::cout << "isCameraConnected: " << is_connected << std::endl;
+  std::cout << "EIH connection: " << cam_connect.is_connected << std::endl;
+  std::cout << "EIH connection message: " << cam_connect.connection_message
+            << std::endl;
 
   TmEIHConfig::Image eih_image;
   // TmEIHConfig::Image::Configuration image_config;
