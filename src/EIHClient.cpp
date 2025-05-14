@@ -11,7 +11,7 @@ int main() {
   EIHCameraApiClient client(server_address);
   GrpcResult result;
 
-#define TEST
+// #define TEST
 #ifdef TEST
   TmEIHConfig::ConfigManager manager;
 

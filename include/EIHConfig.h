@@ -77,15 +77,15 @@ struct Image {
 //   std::string ImageSize;  // 1M:1280*960, 5M:2592*1944
 // };
 
-class ConfigManager {
- public:
-  CameraConnection cam_connect;
-  CameraMatrix cam_matrix;
-  DistortionCoefficients distortion_coeffs;
-  HandEyeArray hand_eye_array;
-  WhiteBalance white_balance;
-  Image image;
-};
+// class ConfigManager {
+//  public:
+//   CameraConnection cam_connect;
+//   CameraMatrix cam_matrix;
+//   DistortionCoefficients distortion_coeffs;
+//   HandEyeArray hand_eye_array;
+//   WhiteBalance white_balance;
+//   Image image;
+// };
 
 }  // namespace TmEIHConfig
 
