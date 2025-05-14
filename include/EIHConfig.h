@@ -40,9 +40,9 @@ struct HandEyeArray {
 };
 
 struct CaptureSettingValue {
-  int CurrentValue;
-  int MinValue;
-  int MaxValue;
+  int current_value;
+  int min_value;
+  int max_value;
 };
 
 struct WhiteBalance {
@@ -53,16 +53,16 @@ struct WhiteBalance {
 
 // to do
 struct Camera {
-  std::string SerialNumber;
+  std::string serial_number;
 };
 
 struct Image {
   struct Configuration {
-    std::string ImageType;  // Only support'png'
-    std::string ImageSize;  // 1M:1280*960, 5M:2592*1944
-    int ImageWidth;
-    int ImageHeight;
-    std::string PixelFormat;  // MONO, RGB
+    std::string image_type;  // Only support'png'
+    std::string image_size;  // 1M:1280*960, 5M:2592*1944
+    int image_width;
+    int image_height;
+    std::string pixel_format;  // MONO, RGB
   };
 
   std::vector<unsigned char> byte_data;  // img raw data
@@ -76,6 +76,16 @@ struct Image {
 //   CaptureSettingValue Focus;
 //   std::string ImageSize;  // 1M:1280*960, 5M:2592*1944
 // };
+
+class ConfigManager {
+ public:
+  CameraConnection cam_connect;
+  CameraMatrix cam_matrix;
+  DistortionCoefficients distortion_coeffs;
+  HandEyeArray hand_eye_array;
+  WhiteBalance white_balance;
+  Image image;
+};
 
 }  // namespace TmEIHConfig
 

@@ -11,6 +11,41 @@ int main() {
   EIHCameraApiClient client(server_address);
   GrpcResult result;
 
+#define TEST
+#ifdef TEST
+  TmEIHConfig::ConfigManager manager;
+
+  client.isCameraConnected(result, manager.cam_connect);
+  std::cout << "grpc status: " << result.status << std::endl;
+  std::cout << "grpc error_message: " << result.error_message << std::endl;
+  std::cout << "EIH connection: " << manager.cam_connect.is_connected
+            << std::endl;
+  std::cout << "EIH connection message: "
+            << manager.cam_connect.connection_message << std::endl;
+
+  client.getImageConfiguration(result, manager.image.config);
+  std::cout << "grpc status: " << result.status << std::endl;
+  std::cout << "grpc error_message: " << result.error_message << std::endl;
+  std::cout << "ImageType: " << manager.image.config.image_type << std::endl;
+  std::cout << "ImageSize: " << manager.image.config.image_size << std::endl;
+  std::cout << "ImageWidth: " << manager.image.config.image_width << std::endl;
+  std::cout << "ImageHeight: " << manager.image.config.image_height
+            << std::endl;
+  std::cout << "PixelFormat: " << manager.image.config.pixel_format
+            << std::endl;
+
+  while (true) {
+    client.getImageData(result, manager.image.byte_data);
+    if (!manager.image.byte_data.empty()) {
+      cv::Mat image =
+          cv::imdecode(cv::Mat(manager.image.byte_data), cv::IMREAD_COLOR);
+      cv::resize(image, image, cv::Size(480, 360));
+      cv::imshow("Received Image", image);
+      cv::waitKey(1);
+    }
+  }
+
+#else
   TmEIHConfig::CameraConnection cam_connect;
   client.isCameraConnected(result, cam_connect);
   std::cout << "grpc status: " << result.status << std::endl;
@@ -20,15 +55,14 @@ int main() {
             << std::endl;
 
   TmEIHConfig::Image eih_image;
-  // TmEIHConfig::Image::Configuration image_config;
   client.getImageConfiguration(result, eih_image.config);
   std::cout << "grpc status: " << result.status << std::endl;
   std::cout << "grpc error_message: " << result.error_message << std::endl;
-  std::cout << "ImageType: " << eih_image.config.ImageType << std::endl;
-  std::cout << "ImageSize: " << eih_image.config.ImageSize << std::endl;
-  std::cout << "ImageWidth: " << eih_image.config.ImageWidth << std::endl;
-  std::cout << "ImageHeight: " << eih_image.config.ImageHeight << std::endl;
-  std::cout << "PixelFormat: " << eih_image.config.PixelFormat << std::endl;
+  std::cout << "ImageType: " << eih_image.config.image_type << std::endl;
+  std::cout << "ImageSize: " << eih_image.config.image_size << std::endl;
+  std::cout << "ImageWidth: " << eih_image.config.image_width << std::endl;
+  std::cout << "ImageHeight: " << eih_image.config.image_height << std::endl;
+  std::cout << "PixelFormat: " << eih_image.config.pixel_format << std::endl;
 
   /*TmEIHConfig::HandEyeArray hand_eye_array;
   client.getHandEyeParameters(result, hand_eye_array);
@@ -51,6 +85,7 @@ int main() {
       cv::waitKey(1);
     }
   }
+#endif
 
   return 0;
 }

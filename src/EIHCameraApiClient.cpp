@@ -157,11 +157,11 @@ bool EIHCameraApiClient::getImageConfiguration(
       _stub->getImageConfiguration(&context, request, &response);
 
   if (status.ok()) {
-    image_config.ImageType = response.imagetype();
-    image_config.ImageSize = response.imagesize();
-    image_config.ImageWidth = response.imagewidth();
-    image_config.ImageHeight = response.imageheight();
-    image_config.PixelFormat = response.pixelformat();
+    image_config.image_type = response.imagetype();
+    image_config.image_size = response.imagesize();
+    image_config.image_width = response.imagewidth();
+    image_config.image_height = response.imageheight();
+    image_config.pixel_format = response.pixelformat();
     result.error_message.clear();
     return true;
   } else {
