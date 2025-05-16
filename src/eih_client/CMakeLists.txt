@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(EIHClient)
+project(eih_client)
 
 include(common.cmake)
 
@@ -43,7 +43,9 @@ add_custom_command(
 # Include generated *.pb.h files
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
-# Find OpenCV
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
 
 # eihcam_grpc_proto
@@ -62,15 +64,29 @@ target_link_libraries(eihcam_grpc_proto
   ${_GRPC_GRPCPP}
   ${_PROTOBUF_LIBPROTOBUF})
   
+# eihcam_client
+add_library(eihcam_client
+  src/EIHCameraApiClient.cpp
+  )
 
-# Add source files
-set(SOURCES
-    src/EIHCameraApiClient.cpp
-    src/EIHClient.cpp
-)
+target_link_libraries(eihcam_client
+  eihcam_grpc_proto
+  ${_REFLECTION}
+  ${_GRPC_GRPCPP}
+  ${_PROTOBUF_LIBPROTOBUF}
+  )
 
-# Add executable
-add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(eihcam_client PUBLIC include)
+
+
+add_executable(${PROJECT_NAME} 
+  src/EIHClientNode.cpp
+  )
+
+target_link_libraries(${PROJECT_NAME}
+  eihcam_client)
+
+ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs cv_bridge OpenCV)
 
 # Include OpenCV headers
 include_directories(${OpenCV_INCLUDE_DIRS})
@@ -86,3 +102,8 @@ target_link_libraries(${PROJECT_NAME}
     ${_PROTOBUF_LIBPROTOBUF}
     ${OpenCV_LIBS}
 )
+
+install(TARGETS ${PROJECT_NAME}
+  DESTINATION lib/${PROJECT_NAME})
+
+ament_package()
