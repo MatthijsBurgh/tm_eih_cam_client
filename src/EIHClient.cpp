@@ -1,5 +1,7 @@
+#include <chrono>
 #include <iostream>
 #include <opencv2/opencv.hpp>
+#include <thread>
 #include <vector>
 
 #include "EIHCameraApiClient.h"
@@ -83,6 +85,11 @@ int main() {
       cv::resize(image, image, cv::Size(480, 360));
       cv::imshow("Received Image", image);
       cv::waitKey(1);
+    } else {
+      std::cout << "Image byte data empty!" << std::endl;
+      std::this_thread::sleep_for(
+          std::chrono::milliseconds(500));  // delay 500ms
+      // cv::waitKey(500);
     }
   }
 #endif
