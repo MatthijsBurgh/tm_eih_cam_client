@@ -64,46 +64,28 @@ target_link_libraries(eihcam_grpc_proto
   ${_GRPC_GRPCPP}
   ${_PROTOBUF_LIBPROTOBUF})
   
-# eihcam_client
-add_library(eihcam_client
+# eihcam_api_client
+add_library(eihcam_api_client
   src/EIHCameraApiClient.cpp
   )
 
-target_link_libraries(eihcam_client
+target_link_libraries(eihcam_api_client
   eihcam_grpc_proto
-  ${_REFLECTION}
-  ${_GRPC_GRPCPP}
-  ${_PROTOBUF_LIBPROTOBUF}
   )
 
-target_include_directories(eihcam_client PUBLIC include)
+target_include_directories(eihcam_api_client PUBLIC include)
 
 
-add_executable(${PROJECT_NAME} 
+add_executable(eih_client
   src/EIHClientNode.cpp
   )
 
-target_link_libraries(${PROJECT_NAME}
-  eihcam_client)
+target_link_libraries(eih_client
+  eihcam_api_client)
 
-ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs cv_bridge OpenCV)
+ament_target_dependencies(eih_client rclcpp sensor_msgs cv_bridge OpenCV)
 
-# Include OpenCV headers
-include_directories(${OpenCV_INCLUDE_DIRS})
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-    include
-)
-
-target_link_libraries(${PROJECT_NAME}
-    eihcam_grpc_proto
-    ${_REFLECTION}
-    ${_GRPC_GRPCPP}
-    ${_PROTOBUF_LIBPROTOBUF}
-    ${OpenCV_LIBS}
-)
-
-install(TARGETS ${PROJECT_NAME}
-  DESTINATION lib/${PROJECT_NAME})
+install(TARGETS eih_client
+  DESTINATION lib/eih_client)
 
 ament_package()
