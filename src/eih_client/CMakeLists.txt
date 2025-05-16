@@ -75,7 +75,7 @@ target_link_libraries(eihcam_api_client
 
 target_include_directories(eihcam_api_client PUBLIC include)
 
-
+# eih client node
 add_executable(eih_client
   src/EIHClientNode.cpp
   )
@@ -85,7 +85,14 @@ target_link_libraries(eih_client
 
 ament_target_dependencies(eih_client rclcpp sensor_msgs cv_bridge OpenCV)
 
-install(TARGETS eih_client
-  DESTINATION lib/eih_client)
+# image sub node
+add_executable(image_sub 
+  src/ImageSubNode.cpp
+  )
+
+ament_target_dependencies(image_sub rclcpp sensor_msgs cv_bridge OpenCV)
+
+install(TARGETS eih_client image_sub
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
