@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "EIHCameraAPI.grpc.pb.h"
-#include "EIHConfig.h"
+#include "eih_config.h"
 
 namespace TmEIHCamera {
 

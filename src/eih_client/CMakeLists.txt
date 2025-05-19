@@ -66,7 +66,7 @@ target_link_libraries(eihcam_grpc_proto
   
 # eihcam_api_client
 add_library(eihcam_api_client
-  src/EIHCameraApiClient.cpp
+  src/eih_camera_api_client.cpp
   )
 
 target_link_libraries(eihcam_api_client
@@ -77,7 +77,7 @@ target_include_directories(eihcam_api_client PUBLIC include)
 
 # eih client node
 add_executable(eih_client
-  src/EIHClientNode.cpp
+  src/eih_client_node.cpp
   )
 
 target_link_libraries(eih_client
@@ -87,7 +87,7 @@ ament_target_dependencies(eih_client rclcpp sensor_msgs cv_bridge OpenCV)
 
 # image sub node
 add_executable(image_sub 
-  src/ImageSubNode.cpp
+  src/image_sub_node.cpp
   )
 
 ament_target_dependencies(image_sub rclcpp sensor_msgs cv_bridge OpenCV)

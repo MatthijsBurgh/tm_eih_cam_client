@@ -4,7 +4,7 @@
 #include <thread>
 #include <vector>
 
-#include "EIHCameraApiClient.h"
+#include "eih_camera_api_client.h"
 using namespace TmEIHCamera;
 
 int main() {

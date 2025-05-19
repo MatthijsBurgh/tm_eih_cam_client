@@ -1,4 +1,4 @@
-#include "EIHCameraApiClient.h"
+#include "eih_camera_api_client.h"
 
 #include <iostream>
 #include <memory>

@@ -1,5 +1,5 @@
-#include <EIHCameraApiClient.h>
 #include <cv_bridge/cv_bridge.h>
+#include <eih_camera_api_client.h>
 
 #include <opencv2/opencv.hpp>
 #include <rclcpp/rclcpp.hpp>
