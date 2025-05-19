@@ -13,10 +13,13 @@ class EIHCameraNode : public rclcpp::Node {
   EIHCameraNode() : Node("eih_camera_node") {
     image_publisher_ =
         this->create_publisher<sensor_msgs::msg::Image>("eih_image", 10);
-    std::string server_address = "172.25.181.19:15567";
-    client_ = std::make_unique<EIHCameraApiClient>(server_address);
 
-    client_->getImageConfiguration(grpc_result_, eih_image_.config);
+    this->declare_parameter<std::string>("robot_ip", "192.168.1.1");
+    std::string robot_ip = this->get_parameter("robot_ip").as_string();
+    std::string eih_address = robot_ip + ":15567";
+    client_ = std::make_unique<EIHCameraApiClient>(eih_address);
+
+    // client_->getImageConfiguration(grpc_result_, eih_image_.config);
     timer_ =
         this->create_wall_timer(std::chrono::milliseconds(33),
                                 std::bind(&EIHCameraNode::publish_image, this));
