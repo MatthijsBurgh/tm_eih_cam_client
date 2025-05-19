@@ -5,8 +5,6 @@
 
 namespace TmEIHCamera {
 
-// To do : all in one class TmEIHCamera(config struct & func) ?
-
 EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
   grpc::ChannelArguments channel_args;
   channel_args.SetMaxReceiveMessageSize(
@@ -16,7 +14,6 @@ EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
   _stub = EIHCameraApi::NewStub(channel);
 }
 
-// to do namespace TmEIHConfig & connection_message
 bool EIHCameraApiClient::isCameraConnected(
     GrpcResult &result, TmEIHConfig::CameraConnection &cam_connect) {
   grpc::ClientContext context;

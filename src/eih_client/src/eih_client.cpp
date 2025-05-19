@@ -11,7 +11,7 @@ int main() {
   std::string server_address = "172.25.181.19:15567";
 
   EIHCameraApiClient client(server_address);
-  GrpcResult result;
+  GrpcResult grpc_result;
 
 // #define TEST
 #ifdef TEST
@@ -49,17 +49,17 @@ int main() {
 
 #else
   TmEIHConfig::CameraConnection cam_connect;
-  client.isCameraConnected(result, cam_connect);
-  std::cout << "grpc status: " << result.status << std::endl;
-  std::cout << "grpc error_message: " << result.error_message << std::endl;
+  client.isCameraConnected(grpc_result, cam_connect);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
   std::cout << "EIH connection: " << cam_connect.is_connected << std::endl;
   std::cout << "EIH connection message: " << cam_connect.connection_message
             << std::endl;
 
   TmEIHConfig::Image eih_image;
-  client.getImageConfiguration(result, eih_image.config);
-  std::cout << "grpc status: " << result.status << std::endl;
-  std::cout << "grpc error_message: " << result.error_message << std::endl;
+  client.getImageConfiguration(grpc_result, eih_image.config);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
   std::cout << "ImageType: " << eih_image.config.image_type << std::endl;
   std::cout << "ImageSize: " << eih_image.config.image_size << std::endl;
   std::cout << "ImageWidth: " << eih_image.config.image_width << std::endl;
@@ -78,7 +78,7 @@ int main() {
 */
   // std::vector<unsigned char> byte_data;
   while (true) {
-    client.getImageData(result, eih_image.byte_data);
+    client.getImageData(grpc_result, eih_image.byte_data);
     if (!eih_image.byte_data.empty()) {
       cv::Mat image =
           cv::imdecode(cv::Mat(eih_image.byte_data), cv::IMREAD_COLOR);

@@ -16,7 +16,7 @@ class EIHCameraNode : public rclcpp::Node {
     std::string server_address = "172.25.181.19:15567";
     client_ = std::make_unique<EIHCameraApiClient>(server_address);
 
-    client_->getImageConfiguration(result_, eih_image_.config);
+    client_->getImageConfiguration(grpc_result_, eih_image_.config);
     timer_ =
         this->create_wall_timer(std::chrono::milliseconds(33),
                                 std::bind(&EIHCameraNode::publish_image, this));
@@ -28,10 +28,10 @@ class EIHCameraNode : public rclcpp::Node {
 
   std::unique_ptr<EIHCameraApiClient> client_;
   TmEIHConfig::Image eih_image_;
-  GrpcResult result_;
+  GrpcResult grpc_result_;
 
   void publish_image() {
-    client_->getImageData(result_, eih_image_.byte_data);  // to do : name style
+    client_->getImageData(grpc_result_, eih_image_.byte_data);
 
     if (!eih_image_.byte_data.empty()) {
       cv::Mat img =
