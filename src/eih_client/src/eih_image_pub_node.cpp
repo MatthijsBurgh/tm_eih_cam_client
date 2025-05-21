@@ -8,25 +8,42 @@
 
 using namespace TmEIHCamera;
 
-class EIHCameraNode : public rclcpp::Node {
+class EIHImagePublisher : public rclcpp::Node {
  public:
-  EIHCameraNode() : Node("eih_camera_node") {
-    image_publisher_ =
-        this->create_publisher<sensor_msgs::msg::Image>("eih_image", 10);
+  EIHImagePublisher() : Node("eih_image_publisher") {
+    this->declare_parameter<std::string>("robot_ip", "");
+    this->declare_parameter<std::string>("frame_id", "eih_camera");
+    this->declare_parameter<std::string>("image_encoding", "bgr8");
 
-    this->declare_parameter<std::string>("robot_ip", "192.168.1.1");
-    std::string robot_ip = this->get_parameter("robot_ip").as_string();
-    std::string eih_address = robot_ip + ":15567";
-    client_ = std::make_unique<EIHCameraApiClient>(eih_address);
+    std::string robot_ip_ = this->get_parameter("robot_ip").as_string();
+    camera_addr_ = robot_ip_ + ":15567";
+    frame_id_ = this->get_parameter("frame_id").as_string();
+    image_encoding_ = this->get_parameter("image_encoding").as_string();
+    client_ = std::make_unique<EIHCameraApiClient>(camera_addr_);
 
-    // client_->getImageConfiguration(grpc_result_, eih_image_.config);
-    timer_ =
-        this->create_wall_timer(std::chrono::milliseconds(33),
-                                std::bind(&EIHCameraNode::publish_image, this));
+    image_pub_ = this->create_publisher<sensor_msgs::msg::Image>(
+        "/eih_image/image_raw", rclcpp::SensorDataQoS());
+
+    // TO DO :  CameraInfo
+    // (maybe not) camera_info_manager_ =
+    // std::make_shared<camera_info_manager::CameraInfoManager>(this,
+    // "eih_camera", camera_info_url); camera_info_pub_ =
+    // this->create_publisher<sensor_msgs::msg::CameraInfo>("camera_info",
+    // rclcpp::SensorDataQoS());
+
+    timer_ = this->create_wall_timer(
+        std::chrono::milliseconds(33),
+        std::bind(&EIHImagePublisher::publish_image, this));
   }
 
  private:
-  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_publisher_;
+  std::string camera_addr_;
+  std::string frame_id_;
+  std::string image_encoding_;
+
+  rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
+  // rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr
+  // camera_info_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   std::unique_ptr<EIHCameraApiClient> client_;
@@ -42,11 +59,11 @@ class EIHCameraNode : public rclcpp::Node {
 
       if (!img.empty()) {
         auto ros_img_msg =
-            cv_bridge::CvImage(std_msgs::msg::Header(), "bgr8", img)
+            cv_bridge::CvImage(std_msgs::msg::Header(), image_encoding_, img)
                 .toImageMsg();
         ros_img_msg->header.stamp = this->now();
-
-        image_publisher_->publish(*ros_img_msg);
+        ros_img_msg->header.frame_id = frame_id_;
+        image_pub_->publish(*ros_img_msg);
         RCLCPP_INFO(this->get_logger(), "Received image data");
       }
     } else {
@@ -57,7 +74,7 @@ class EIHCameraNode : public rclcpp::Node {
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<EIHCameraNode>());
+  rclcpp::spin(std::make_shared<EIHImagePublisher>());
   rclcpp::shutdown();
   return 0;
 }
