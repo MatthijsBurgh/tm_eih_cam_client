@@ -22,7 +22,7 @@ class EIHImagePublisher : public rclcpp::Node {
     client_ = std::make_unique<EIHCameraApiClient>(camera_addr_);
 
     image_pub_ = this->create_publisher<sensor_msgs::msg::Image>(
-        "/eih_image/image_raw", rclcpp::SensorDataQoS());
+        "/eih_camera/image_raw", rclcpp::SensorDataQoS());
 
     // TO DO :  CameraInfo
     // (maybe not) camera_info_manager_ =
