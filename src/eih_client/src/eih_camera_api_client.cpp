@@ -11,7 +11,7 @@ EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
       -1);  // Set to unlimited size, or you can set a specific size in bytes.
   auto channel = grpc::CreateCustomChannel(
       server_address, grpc::InsecureChannelCredentials(), channel_args);
-  _stub = EIHCameraApi::NewStub(channel);
+  stub_ = EIHCameraApi::NewStub(channel);
 }
 
 bool EIHCameraApiClient::isCameraConnected(
@@ -19,7 +19,7 @@ bool EIHCameraApiClient::isCameraConnected(
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::isCameraConnectedResponse response;
-  grpc::Status status = _stub->isCameraConnected(&context, request, &response);
+  grpc::Status status = stub_->isCameraConnected(&context, request, &response);
 
   if (status.ok()) {
     cam_connect.is_connected = response.iscameraconnected();
@@ -104,7 +104,7 @@ bool EIHCameraApiClient::getHandEyeParameters(
   const google::protobuf::Empty request;
   TmEIHCamera::Camera_HandEyeParameters response;
   grpc::Status status =
-      _stub->getHandEyeParameters(&context, request, &response);
+      stub_->getHandEyeParameters(&context, request, &response);
 
   if (status.ok()) {
     // hand_eye_array = response.handeyearray();
@@ -128,7 +128,7 @@ bool EIHCameraApiClient::getImageData(GrpcResult &result,
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::Camera_Image_Data response;
-  grpc::Status status = _stub->getImageData(&context, request, &response);
+  grpc::Status status = stub_->getImageData(&context, request, &response);
 
   if (status.ok()) {
     byte_data.assign(response.encodestring().begin(),
@@ -151,7 +151,7 @@ bool EIHCameraApiClient::getImageConfiguration(
 
   TmEIHCamera::Camera_Image_Configuration response;
   grpc::Status status =
-      _stub->getImageConfiguration(&context, request, &response);
+      stub_->getImageConfiguration(&context, request, &response);
 
   if (status.ok()) {
     image_config.image_type = response.imagetype();

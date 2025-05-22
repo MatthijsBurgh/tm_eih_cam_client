@@ -23,7 +23,7 @@ struct GrpcResult {
 
 class EIHCameraApiClient {
  private:
-  std::unique_ptr<EIHCameraApi::Stub> _stub;  // stub
+  std::unique_ptr<EIHCameraApi::Stub> stub_;  // stub
 
  public:
   EIHCameraApiClient() = default;
