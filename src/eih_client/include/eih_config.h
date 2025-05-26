@@ -2,13 +2,11 @@
 #define EIHCONFIG_H
 
 #include <string>
+#include <vector>
+#include <cstdint>
+
 // ref from EIHCamera.proto format
 namespace TmEIHConfig {
-
-struct CameraConnection {
-  bool is_connected;
-  std::string connection_message;
-};
 
 struct CameraMatrix {
   float matrix_00;
@@ -51,41 +49,111 @@ struct WhiteBalance {
   CaptureSettingValue blue_ratio;
 };
 
-// to do
 struct Camera {
-  std::string serial_number;
-};
 
-struct Image {
-  struct Configuration {
-    std::string image_type;  // Only support'png'
-    std::string image_size;  // 1M:1280*960, 5M:2592*1944
+  struct Information {
+    std::string serial_number;
+  };
+  struct Intrinsics {
+    float focus_value;
     int image_width;
     int image_height;
-    std::string pixel_format;  // MONO, RGB
+    CameraMatrix camera_matrix;
+    DistortionCoefficients distortion_coefficients;
   };
 
-  std::vector<unsigned char> byte_data;  // img raw data
-  Configuration config;
+  struct HandEyeParameters {
+    HandEyeArray hand_eye_array;
+  };
+
+  struct Image {
+  
+    struct Data {
+      std::vector<uint8_t> encode_string;  // img raw data
+    };
+    struct Configuration {
+      std::string image_type;  // Only support'png'
+      std::string image_size;  // 1M:1280*960, 5M:2592*1944
+      int image_width;
+      int image_height;
+      std::string pixel_format;  // MONO, RGB
+    };
+  
+    Data data;
+    Configuration config;
+  };
+  struct CapturingSettings {
+    CaptureSettingValue shutter_time;
+    CaptureSettingValue gain;
+    WhiteBalance white_balance;
+    CaptureSettingValue focus;
+    std::string image_size;  // 1M:1280*960, 5M:2592*1944
+  };
+
+  std::vector<Intrinsics> intrinsics; // repeated
+  HandEyeParameters handeye_parameters;
+  CapturingSettings capturing_settings;
+  Image image;
 };
 
-// struct CapturingSettings {
-//   CaptureSettingValue ShutterTime;
-//   CaptureSettingValue Gain;
-//   WhiteBalance WhiteBalance;
-//   CaptureSettingValue Focus;
-//   std::string ImageSize;  // 1M:1280*960, 5M:2592*1944
-// };
 
-// class ConfigManager {
-//  public:
-//   CameraConnection cam_connect;
-//   CameraMatrix cam_matrix;
-//   DistortionCoefficients distortion_coeffs;
-//   HandEyeArray hand_eye_array;
-//   WhiteBalance white_balance;
-//   Image image;
-// };
+
+
+// ref from EIHCameraAPI.proto ------------
+struct SerialNumberRequest {
+  std::string serial_number;
+};
+struct IsCameraConnection {
+  bool is_connected;
+  std::string connection_message;
+};
+
+struct SetCapturingSettingsRequest {
+  int shutter_time;
+  int gain;
+  int wb_redratio;
+  int wb_greenratio;
+  int wb_blueratio;
+  int focus;
+  std::string image_size;  // 1M = 1280*960,  5M = 2592*1944
+};
+
+struct GetShutterTimeResponse {
+  CaptureSettingValue shutter_time;
+};
+struct SetShutterTimeRequest {
+  int shutter_time;
+};
+
+struct GetGainResponse {
+  CaptureSettingValue gain;
+};
+struct SetGainRequest {
+  int gain;
+};
+
+struct GetWhiteBalanceResponse {
+  WhiteBalance white_balance;
+};
+struct SetWhiteBalanceRequest {
+  int wb_redratio;
+  int wb_greenratio;
+  int wb_blueratio;
+};
+
+struct GetFocusResponse {
+  CaptureSettingValue focus;
+};
+struct SetFocusRequest {
+  int focus;
+};
+
+struct GetImageSizeResponse {
+  std::string image_size;  // 1M:1280_960, 5M:2592_1944
+};
+struct SetImageSizeRequest {
+  std::string image_size;  // 1M:1280_960, 5M:2592_1944
+};
 
 }  // namespace TmEIHConfig
 

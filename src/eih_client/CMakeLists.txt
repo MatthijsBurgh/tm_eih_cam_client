@@ -76,14 +76,14 @@ target_link_libraries(eihcam_api_client
 target_include_directories(eihcam_api_client PUBLIC include)
 
 # eih client node
-add_executable(eih_image_pub
-  src/eih_image_pub_node.cpp
+add_executable(eih_client_pub
+  src/eih_client_pub_node.cpp
   )
 
-target_link_libraries(eih_image_pub
+target_link_libraries(eih_client_pub
   eihcam_api_client)
 
-ament_target_dependencies(eih_image_pub rclcpp sensor_msgs cv_bridge OpenCV)
+ament_target_dependencies(eih_client_pub rclcpp sensor_msgs cv_bridge OpenCV)
 
 # image sub node
 add_executable(image_sub 
@@ -92,7 +92,7 @@ add_executable(image_sub
 
 ament_target_dependencies(image_sub rclcpp sensor_msgs cv_bridge OpenCV)
 
-install(TARGETS eih_image_pub image_sub
+install(TARGETS eih_client_pub image_sub
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch/

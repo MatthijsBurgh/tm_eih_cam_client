@@ -15,7 +15,7 @@ EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
 }
 
 bool EIHCameraApiClient::isCameraConnected(
-    GrpcResult &result, TmEIHConfig::CameraConnection &cam_connect) {
+    GrpcResult &result, TmEIHConfig::IsCameraConnection &cam_connect) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::isCameraConnectedResponse response;
@@ -124,20 +124,20 @@ bool EIHCameraApiClient::getHandEyeParameters(
 */
 
 bool EIHCameraApiClient::getImageData(GrpcResult &result,
-                                      std::vector<unsigned char> &byte_data) {
+                                      TmEIHConfig::Camera::Image::Data &data) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::Camera_Image_Data response;
   grpc::Status status = stub_->getImageData(&context, request, &response);
 
   if (status.ok()) {
-    byte_data.assign(response.encodestring().begin(),
+    data.encode_string.assign(response.encodestring().begin(),
                      response.encodestring().end());
     result.status = StatusCode::SUCCESS;
     result.error_message.clear();
     return true;
   } else {
-    byte_data.clear();
+    data.encode_string.clear();
     result.status = StatusCode::FAIL;
     result.error_message = status.error_code();
     return false;
@@ -145,7 +145,7 @@ bool EIHCameraApiClient::getImageData(GrpcResult &result,
 }
 
 bool EIHCameraApiClient::getImageConfiguration(
-    GrpcResult &result, TmEIHConfig::Image::Configuration &image_config) {
+    GrpcResult &result, TmEIHConfig::Camera::Image::Configuration &image_config) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
 
