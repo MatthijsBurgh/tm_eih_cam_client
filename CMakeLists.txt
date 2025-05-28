@@ -21,6 +21,7 @@ add_custom_command(
       ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
         --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
         -I "${eihcam_api_proto_path}"
+	--proto_path=/include/:.
         --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
         "${eihcam_api_proto}"
       DEPENDS "${eihcam_api_proto}")
@@ -36,6 +37,7 @@ add_custom_command(
       ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
         --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
         -I "${eihcam_proto_path}"
+	--proto_path=/include/:.
         --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
         "${eihcam_proto}"
       DEPENDS "${eihcam_proto}")
