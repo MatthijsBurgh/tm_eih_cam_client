@@ -2,6 +2,7 @@ FROM ros:humble
 
 LABEL maintainer="Steven Zheng <steven.zheng@tm-robot.com>"
 
+# solve ros GPG key error
 RUN rm -f /etc/apt/sources.list.d/ros2-latest.list && \
     apt-get update && apt-get install -y \
     curl gnupg2 lsb-release && \
@@ -32,4 +33,4 @@ RUN git clone --recurse-submodules --depth 1 --shallow-submodules -b ${GRPC_RELE
     # make && make install && make clean && ldconfig
     make && make install && make clean
 
-WORKDIR /workspace
+WORKDIR /tm_eih_grpc_ws
