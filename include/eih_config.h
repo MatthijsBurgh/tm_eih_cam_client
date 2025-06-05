@@ -1,9 +1,9 @@
 #ifndef EIHCONFIG_H
 #define EIHCONFIG_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 // ref from EIHCamera.proto format
 namespace TmEIHConfig {
@@ -50,7 +50,6 @@ struct WhiteBalance {
 };
 
 struct Camera {
-
   struct Information {
     std::string serial_number;
   };
@@ -67,7 +66,6 @@ struct Camera {
   };
 
   struct Image {
-  
     struct Data {
       std::vector<uint8_t> encode_string;  // img raw data
     };
@@ -78,7 +76,7 @@ struct Camera {
       int image_height;
       std::string pixel_format;  // MONO, RGB
     };
-  
+
     Data data;
     Configuration config;
   };
@@ -90,21 +88,18 @@ struct Camera {
     std::string image_size;  // 1M:1280*960, 5M:2592*1944
   };
 
-  std::vector<Intrinsics> intrinsics; // repeated
+  std::vector<Intrinsics> intrinsics;  // repeated
   HandEyeParameters handeye_parameters;
   CapturingSettings capturing_settings;
   Image image;
 };
 
-
-
-
 // ref from EIHCameraAPI.proto ------------
 struct SerialNumberRequest {
   std::string serial_number;
 };
-struct IsCameraConnection {
-  bool is_connected;
+struct IsCameraConnectedResponse {
+  bool is_camera_connected;
   std::string connection_message;
 };
 

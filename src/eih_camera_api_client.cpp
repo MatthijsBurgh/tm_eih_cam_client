@@ -15,14 +15,14 @@ EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
 }
 
 bool EIHCameraApiClient::isCameraConnected(
-    GrpcResult &result, TmEIHConfig::IsCameraConnection &cam_connect) {
+    GrpcResult &result, TmEIHConfig::IsCameraConnectedResponse &cam_connect) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::isCameraConnectedResponse response;
   grpc::Status status = stub_->isCameraConnected(&context, request, &response);
 
   if (status.ok()) {
-    cam_connect.is_connected = response.iscameraconnected();
+    cam_connect.is_camera_connected = response.iscameraconnected();
     cam_connect.connection_message = response.connection_message();
     result.status = StatusCode::SUCCESS;
     result.error_message.clear();
@@ -132,7 +132,7 @@ bool EIHCameraApiClient::getImageData(GrpcResult &result,
 
   if (status.ok()) {
     data.encode_string.assign(response.encodestring().begin(),
-                     response.encodestring().end());
+                              response.encodestring().end());
     result.status = StatusCode::SUCCESS;
     result.error_message.clear();
     return true;
@@ -145,7 +145,8 @@ bool EIHCameraApiClient::getImageData(GrpcResult &result,
 }
 
 bool EIHCameraApiClient::getImageConfiguration(
-    GrpcResult &result, TmEIHConfig::Camera::Image::Configuration &image_config) {
+    GrpcResult &result,
+    TmEIHConfig::Camera::Image::Configuration &image_config) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
 

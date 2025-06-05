@@ -31,15 +31,18 @@ class EIHCameraApiClient {
 
   // to do namespace & connection_message
   bool isCameraConnected(GrpcResult &result,
-                         TmEIHConfig::IsCameraConnection &cam_connect);
+                         TmEIHConfig::IsCameraConnectedResponse &cam_connect);
 
-  bool getIntrinsics(GrpcResult &result, TmEIHConfig::GetGainResponse &gain_res);
+  bool getIntrinsics(GrpcResult &result,
+                     TmEIHConfig::GetGainResponse &gain_res);
   bool getHandEyeParameters(GrpcResult &result,
                             TmEIHConfig::HandEyeArray &hand_eye_array);
 
-  bool getImageData(GrpcResult &result, TmEIHConfig::Camera::Image::Data &byte_data);
-  bool getImageConfiguration(GrpcResult &result,
-                             TmEIHConfig::Camera::Image::Configuration &image_config);
+  bool getImageData(GrpcResult &result,
+                    TmEIHConfig::Camera::Image::Data &byte_data);
+  bool getImageConfiguration(
+      GrpcResult &result,
+      TmEIHConfig::Camera::Image::Configuration &image_config);
 
   // bool terminateCameraConnection(GrpcResult &result);
   // bool resumeCameraConnection(GrpcResult &result);
@@ -61,7 +64,6 @@ class EIHCameraApiClient {
 
   // bool getImageSize();
   // bool setImageSize();
-  
 
   //   grpc::Status isCameraConnected();
   //   grpc::Status getHandEyeParameters();
