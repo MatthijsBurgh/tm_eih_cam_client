@@ -79,7 +79,8 @@ struct Camera {
 
     Data data;
     Configuration config;
-  };
+  };  // Image
+
   struct CapturingSettings {
     CaptureSettingValue shutter_time;
     CaptureSettingValue gain;
@@ -92,7 +93,7 @@ struct Camera {
   HandEyeParameters handeye_parameters;
   CapturingSettings capturing_settings;
   Image image;
-};
+};  // Camera
 
 // ref from EIHCameraAPI.proto ------------
 struct SerialNumberRequest {
@@ -149,6 +150,10 @@ struct GetImageSizeResponse {
 struct SetImageSizeRequest {
   std::string image_size;  // 1M:1280_960, 5M:2592_1944
 };
+
+// struct GetIntrinsicsResponse {
+//   Camera::Intrinsics cam_intrinsics;
+// };
 
 }  // namespace TmEIHConfig
 

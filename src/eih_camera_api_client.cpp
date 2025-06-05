@@ -33,70 +33,54 @@ bool EIHCameraApiClient::isCameraConnected(
     return false;
   }
 }
-/*
-grpc::Status EIHCameraApiClient::getIntrinsics() {
+
+bool EIHCameraApiClient::getIntrinsics(
+    GrpcResult &result,
+    std::vector<TmEIHConfig::Camera::Intrinsics> &intrinsics_res) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::getIntrinsicsResponse response;
+  grpc::Status status = stub_->getIntrinsics(&context, request, &response);
 
-  grpc::Status status = m_Stub->getIntrinsics(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
   if (status.ok()) {
-    std::cout << "Intrinsics retrieved successfully:" << std::endl;
-    for (const auto &intrinsics : response.cam_intrinsics()) {
-      std::cout << "��=============================��" << std::endl;
-      std::cout << "Camera Matrix:" << std::endl;
-      std::cout << "  Matrix_00: " << intrinsics.cameramatrix().matrix_00()
-                << std::endl;
-      std::cout << "  Matrix_01: " << intrinsics.cameramatrix().matrix_01()
-                << std::endl;
-      std::cout << "  Matrix_02: " << intrinsics.cameramatrix().matrix_02()
-                << std::endl;
-      std::cout << "  Matrix_10: " << intrinsics.cameramatrix().matrix_10()
-                << std::endl;
-      std::cout << "  Matrix_11: " << intrinsics.cameramatrix().matrix_11()
-                << std::endl;
-      std::cout << "  Matrix_12: " << intrinsics.cameramatrix().matrix_12()
-                << std::endl;
-      std::cout << "  Matrix_20: " << intrinsics.cameramatrix().matrix_20()
-                << std::endl;
-      std::cout << "  Matrix_21: " << intrinsics.cameramatrix().matrix_21()
-                << std::endl;
-      std::cout << "  Matrix_22: " << intrinsics.cameramatrix().matrix_22()
-                << std::endl;
+    intrinsics_res.clear();
+    for (const auto &intrinsics :      // TO DO: fix multi
+         response.cam_intrinsics()) {  // if multi cameras
+      TmEIHConfig::Camera::Intrinsics ci;
+      ci.focus_value = intrinsics.focusvalue();
+      ci.image_width = intrinsics.imagewidth();
+      ci.image_height = intrinsics.imageheight();
+      ci.camera_matrix.matrix_00 = intrinsics.cameramatrix().matrix_00();
+      ci.camera_matrix.matrix_01 = intrinsics.cameramatrix().matrix_01();
+      ci.camera_matrix.matrix_02 = intrinsics.cameramatrix().matrix_02();
+      ci.camera_matrix.matrix_10 = intrinsics.cameramatrix().matrix_10();
+      ci.camera_matrix.matrix_11 = intrinsics.cameramatrix().matrix_11();
+      ci.camera_matrix.matrix_12 = intrinsics.cameramatrix().matrix_12();
+      ci.camera_matrix.matrix_20 = intrinsics.cameramatrix().matrix_20();
+      ci.camera_matrix.matrix_21 = intrinsics.cameramatrix().matrix_21();
+      ci.camera_matrix.matrix_22 = intrinsics.cameramatrix().matrix_22();
+      ci.distortion_coefficients.coefficient_00 =
+          intrinsics.distortioncoefficients().coefficient_00();
+      ci.distortion_coefficients.coefficient_10 =
+          intrinsics.distortioncoefficients().coefficient_10();
+      ci.distortion_coefficients.coefficient_20 =
+          intrinsics.distortioncoefficients().coefficient_20();
+      ci.distortion_coefficients.coefficient_30 =
+          intrinsics.distortioncoefficients().coefficient_30();
+      ci.distortion_coefficients.coefficient_40 =
+          intrinsics.distortioncoefficients().coefficient_40();
 
-      std::cout << "Distortion Coefficients:" << std::endl;
-      std::cout << "  Coefficient_00: "
-                << intrinsics.distortioncoefficients().coefficient_00()
-                << std::endl;
-      std::cout << "  Coefficient_10: "
-                << intrinsics.distortioncoefficients().coefficient_10()
-                << std::endl;
-      std::cout << "  Coefficient_20: "
-                << intrinsics.distortioncoefficients().coefficient_20()
-                << std::endl;
-      std::cout << "  Coefficient_30: "
-                << intrinsics.distortioncoefficients().coefficient_30()
-                << std::endl;
-      std::cout << "  Coefficient_40: "
-                << intrinsics.distortioncoefficients().coefficient_40()
-                << std::endl;
-
-      std::cout << "Focus Value: " << intrinsics.focusvalue() << std::endl;
-      std::cout << "Image Width: " << intrinsics.imagewidth() << std::endl;
-      std::cout << "Image Height: " << intrinsics.imageheight() << std::endl;
-      std::cout << "��=============================��" << std::endl;
+      intrinsics_res.push_back(ci);
     }
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
   } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-  return status;
 }
-*/
 /*
 bool EIHCameraApiClient::getHandEyeParameters(
     GrpcResult &result, TmEIHConfig::HandEyeArray &hand_eye_array) {

@@ -33,8 +33,9 @@ class EIHCameraApiClient {
   bool isCameraConnected(GrpcResult &result,
                          TmEIHConfig::IsCameraConnectedResponse &cam_connect);
 
-  bool getIntrinsics(GrpcResult &result,
-                     TmEIHConfig::GetGainResponse &gain_res);
+  bool getIntrinsics(
+      GrpcResult &result,
+      std::vector<TmEIHConfig::Camera::Intrinsics> &intrinsics_res);
   bool getHandEyeParameters(GrpcResult &result,
                             TmEIHConfig::HandEyeArray &hand_eye_array);
 
