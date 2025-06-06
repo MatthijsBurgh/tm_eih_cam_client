@@ -80,7 +80,7 @@ bool EIHCameraApiClient::getIntrinsics(
     return false;
   }
 }
-/*
+
 bool EIHCameraApiClient::getHandEyeParameters(
     GrpcResult &result, TmEIHConfig::HandEyeArray &hand_eye_array) {
   grpc::ClientContext context;
@@ -90,13 +90,14 @@ bool EIHCameraApiClient::getHandEyeParameters(
       stub_->getHandEyeParameters(&context, request, &response);
 
   if (status.ok()) {
-    // hand_eye_array = response.handeyearray();
     hand_eye_array.handeye_x = response.handeyearray().handeye_x();
     hand_eye_array.handeye_y = response.handeyearray().handeye_y();
     hand_eye_array.handeye_z = response.handeyearray().handeye_z();
     hand_eye_array.handeye_rx = response.handeyearray().handeye_rx();
     hand_eye_array.handeye_ry = response.handeyearray().handeye_ry();
     hand_eye_array.handeye_rz = response.handeyearray().handeye_rz();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
     return true;
   } else {
     result.status = StatusCode::FAIL;
@@ -104,7 +105,6 @@ bool EIHCameraApiClient::getHandEyeParameters(
     return false;
   }
 }
-*/
 
 bool EIHCameraApiClient::getImageData(GrpcResult &result,
                                       TmEIHConfig::Image::Data &data) {

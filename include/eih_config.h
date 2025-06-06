@@ -91,7 +91,7 @@ struct Camera {
   };
 
   std::vector<Intrinsics> intrinsics;  // repeated
-  HandEyeParameters handeye_parameters;
+  HandEyeParameters hand_eye_parameters;
   CapturingSettings capturing_settings;
   Image image;
 };  // Camera
@@ -108,9 +108,9 @@ struct Intrinsics {
   DistortionCoefficients distortion_coefficients;
 };
 
-struct HandEyeParameters {
-  HandEyeArray hand_eye_array;
-};
+// struct HandEyeParameters {
+//   HandEyeArray hand_eye_array;
+// };
 
 struct Image {
   struct Data {
