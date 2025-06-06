@@ -33,17 +33,14 @@ class EIHCameraApiClient {
   bool isCameraConnected(GrpcResult &result,
                          TmEIHConfig::IsCameraConnectedResponse &cam_connect);
 
-  bool getIntrinsics(
-      GrpcResult &result,
-      std::vector<TmEIHConfig::Camera::Intrinsics> &intrinsics_res);
+  bool getIntrinsics(GrpcResult &result,
+                     std::vector<TmEIHConfig::Intrinsics> &intrinsics_res);
   bool getHandEyeParameters(GrpcResult &result,
                             TmEIHConfig::HandEyeArray &hand_eye_array);
 
-  bool getImageData(GrpcResult &result,
-                    TmEIHConfig::Camera::Image::Data &byte_data);
-  bool getImageConfiguration(
-      GrpcResult &result,
-      TmEIHConfig::Camera::Image::Configuration &image_config);
+  bool getImageData(GrpcResult &result, TmEIHConfig::Image::Data &byte_data);
+  bool getImageConfiguration(GrpcResult &result,
+                             TmEIHConfig::Image::Configuration &image_config);
 
   // bool terminateCameraConnection(GrpcResult &result);
   // bool resumeCameraConnection(GrpcResult &result);

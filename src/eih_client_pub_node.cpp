@@ -38,23 +38,22 @@ class EIHClientPublisher : public rclcpp::Node {
   std::string image_encoding_;
 
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
-  // rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr camera_info_pub_;
+  // rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr
+  // camera_info_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
   std::unique_ptr<EIHCameraApiClient> client_;
-  // TmEIHConfig::Camera::Image eih_image_;
-  TmEIHConfig::Camera eih_cam_;
+  TmEIHConfig::Image eih_img_;
   GrpcResult grpc_result_;
 
   // Image
   void publish_image() {
     // client_->getImageData(grpc_result_, eih_image_.data.encode_string);
-    client_->getImageData(grpc_result_, eih_cam_.image.data);
-    auto img_raw = eih_cam_.image.data.encode_string;
-    
+    client_->getImageData(grpc_result_, eih_img_.data);
+    auto img_raw = eih_img_.data.encode_string;
+
     if (!img_raw.empty()) {
-      cv::Mat img =
-          cv::imdecode(cv::Mat(img_raw), cv::IMREAD_COLOR);
+      cv::Mat img = cv::imdecode(cv::Mat(img_raw), cv::IMREAD_COLOR);
 
       if (!img.empty()) {
         auto img_msg =
@@ -74,14 +73,12 @@ class EIHClientPublisher : public rclcpp::Node {
   // void publish_info() {
   //     sensor_msgs::msg::CameraInfo cam_info;
   //     cam_info.header = ros_img_msg->header;
-  //     
+  //
   //     cam_info.width = ...;
   //     cam_info.height = ...;
   //     cam_info.k = {...};
-  //     cam_info.d = {...};  
+  //     cam_info.d = {...};
   // }
-
-
 };
 
 int main(int argc, char **argv) {

@@ -48,28 +48,26 @@ int main() {
   }
 
 #else
-  TmEIHConfig::IsCameraConnectedResponse cam_connect;
-  client.isCameraConnected(grpc_result, cam_connect);
+  TmEIHConfig::IsCameraConnectedResponse eih_connect;
+  client.isCameraConnected(grpc_result, eih_connect);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
-  std::cout << "EIH connection: " << cam_connect.is_camera_connected
+  std::cout << "EIH connection: " << eih_connect.is_camera_connected
             << std::endl;
-  std::cout << "EIH connection message: " << cam_connect.connection_message
+  std::cout << "EIH connection message: " << eih_connect.connection_message
             << std::endl;
 
-  TmEIHConfig::Camera eih_cam;
-  client.getImageConfiguration(grpc_result, eih_cam.image.config);
+  TmEIHConfig::Image eih_img;
+  client.getImageConfiguration(grpc_result, eih_img.config);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
-  std::cout << "ImageType: " << eih_cam.image.config.image_type << std::endl;
-  std::cout << "ImageSize: " << eih_cam.image.config.image_size << std::endl;
-  std::cout << "ImageWidth: " << eih_cam.image.config.image_width << std::endl;
-  std::cout << "ImageHeight: " << eih_cam.image.config.image_height
-            << std::endl;
-  std::cout << "PixelFormat: " << eih_cam.image.config.pixel_format
-            << std::endl;
+  std::cout << "ImageType: " << eih_img.config.image_type << std::endl;
+  std::cout << "ImageSize: " << eih_img.config.image_size << std::endl;
+  std::cout << "ImageWidth: " << eih_img.config.image_width << std::endl;
+  std::cout << "ImageHeight: " << eih_img.config.image_height << std::endl;
+  std::cout << "PixelFormat: " << eih_img.config.pixel_format << std::endl;
 
-  std::vector<TmEIHConfig::Camera::Intrinsics> intrinsics_res;
+  std::vector<TmEIHConfig::Intrinsics> intrinsics_res;
   client.getIntrinsics(grpc_result, intrinsics_res);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -117,11 +115,12 @@ int main() {
   // hand_eye_array.handeye_rz << std::endl;
 
   // std::vector<unsigned char> byte_data;
+  // TmEIHConfig::Image::Data eih_img;
   while (true) {
-    client.getImageData(grpc_result, eih_cam.image.data);
-    if (!eih_cam.image.data.encode_string.empty()) {
-      cv::Mat image = cv::imdecode(cv::Mat(eih_cam.image.data.encode_string),
-                                   cv::IMREAD_COLOR);
+    client.getImageData(grpc_result, eih_img.data);
+    if (!eih_img.data.encode_string.empty()) {
+      cv::Mat image =
+          cv::imdecode(cv::Mat(eih_img.data.encode_string), cv::IMREAD_COLOR);
       cv::resize(image, image, cv::Size(480, 360));
       cv::imshow("Received Image", image);
       cv::waitKey(1);

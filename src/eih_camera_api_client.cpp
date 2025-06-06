@@ -35,8 +35,7 @@ bool EIHCameraApiClient::isCameraConnected(
 }
 
 bool EIHCameraApiClient::getIntrinsics(
-    GrpcResult &result,
-    std::vector<TmEIHConfig::Camera::Intrinsics> &intrinsics_res) {
+    GrpcResult &result, std::vector<TmEIHConfig::Intrinsics> &intrinsics_res) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::getIntrinsicsResponse response;
@@ -46,7 +45,7 @@ bool EIHCameraApiClient::getIntrinsics(
     intrinsics_res.clear();
     for (const auto &intrinsics :      // TO DO: fix multi
          response.cam_intrinsics()) {  // if multi cameras
-      TmEIHConfig::Camera::Intrinsics ci;
+      TmEIHConfig::Intrinsics ci;
       ci.focus_value = intrinsics.focusvalue();
       ci.image_width = intrinsics.imagewidth();
       ci.image_height = intrinsics.imageheight();
@@ -108,7 +107,7 @@ bool EIHCameraApiClient::getHandEyeParameters(
 */
 
 bool EIHCameraApiClient::getImageData(GrpcResult &result,
-                                      TmEIHConfig::Camera::Image::Data &data) {
+                                      TmEIHConfig::Image::Data &data) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::Camera_Image_Data response;
@@ -129,8 +128,7 @@ bool EIHCameraApiClient::getImageData(GrpcResult &result,
 }
 
 bool EIHCameraApiClient::getImageConfiguration(
-    GrpcResult &result,
-    TmEIHConfig::Camera::Image::Configuration &image_config) {
+    GrpcResult &result, TmEIHConfig::Image::Configuration &image_config) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
 
