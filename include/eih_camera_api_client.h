@@ -29,7 +29,6 @@ class EIHCameraApiClient {
   EIHCameraApiClient() = default;
   explicit EIHCameraApiClient(const std::string &server_address);
 
-  // to do namespace & connection_message
   bool isCameraConnected(GrpcResult &result,
                          TmEIHConfig::IsCameraConnectedResponse &cam_connect);
 
@@ -45,7 +44,8 @@ class EIHCameraApiClient {
   // bool terminateCameraConnection(GrpcResult &result);
   // bool resumeCameraConnection(GrpcResult &result);
 
-  // bool getCapturingSettings();
+  bool getCapturingSettings(GrpcResult &result,
+                            TmEIHConfig::CapturingSettings &capturing_settings);
   // bool setCapturingSettings();
 
   // bool getShutterTime();
@@ -62,25 +62,6 @@ class EIHCameraApiClient {
 
   // bool getImageSize();
   // bool setImageSize();
-
-  //   grpc::Status isCameraConnected();
-  //   grpc::Status getHandEyeParameters();
-  //   grpc::Status getImageData();
-  //   grpc::Status getImageConfiguration();
-  //   grpc::Status terminateCameraConnection();
-  //   grpc::Status resumeCameraConnection();
-  //   grpc::Status getCapturingSettings();
-  //   grpc::Status setCapturingSettings();  //
-  //   grpc::Status getShutterTime();
-  //   grpc::Status setShutterTime();  //
-  //   grpc::Status getGain();
-  //   grpc::Status setGain();  //
-  //   grpc::Status getWhiteBalance();
-  //   grpc::Status setWhiteBalance();  //
-  //   grpc::Status getFocus();
-  //   grpc::Status setFocus();  //
-  //   grpc::Status getImageSize();
-  //   grpc::Status setImageSize();  //
 };
 
 }  // namespace TmEIHCamera

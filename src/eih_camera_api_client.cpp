@@ -189,69 +189,58 @@ grpc::Status EIHCameraApiClient::resumeCameraConnection() {
   }
   return status;
 }
-
-grpc::Status EIHCameraApiClient::getCapturingSettings() {
+*/
+bool EIHCameraApiClient::getCapturingSettings(
+    GrpcResult &result, TmEIHConfig::CapturingSettings &capturing_settings) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   Camera_CapturingSettings response;
 
   grpc::Status status =
-      m_Stub->getCapturingSettings(&context, request, &response);
-
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+      stub_->getCapturingSettings(&context, request, &response);
   if (status.ok()) {
-    std::cout << "Capturing settings retrieved successfully." << std::endl;
-    std::cout << "Shutter Time - Current Value: "
-              << response.shuttertime().currentvalue() << std::endl;
-    std::cout << "Shutter Time - Min Value: "
-              << response.shuttertime().minvalue() << std::endl;
-    std::cout << "Shutter Time - Max Value: "
-              << response.shuttertime().maxvalue() << std::endl;
-    std::cout << "Gain - Current Value: " << response.gain().currentvalue()
-              << std::endl;
-    std::cout << "Gain - Min Value: " << response.gain().minvalue()
-              << std::endl;
-    std::cout << "Gain - Max Value: " << response.gain().maxvalue()
-              << std::endl;
-    std::cout << "Focus - Current Value: " << response.focus().currentvalue()
-              << std::endl;
-    std::cout << "Focus - Min Value: " << response.focus().minvalue()
-              << std::endl;
-    std::cout << "Focus - Max Value: " << response.focus().maxvalue()
-              << std::endl;
-    std::cout << "White Balance - Red Ratio - Current Value: "
-              << response.whitebalance().red_ratio().currentvalue()
-              << std::endl;
-    std::cout << "White Balance - Red Ratio - Min Value: "
-              << response.whitebalance().red_ratio().minvalue() << std::endl;
-    std::cout << "White Balance - Red Ratio - Max Value: "
-              << response.whitebalance().red_ratio().maxvalue() << std::endl;
-    std::cout << "White Balance - Green Ratio - Current Value: "
-              << response.whitebalance().green_ratio().currentvalue()
-              << std::endl;
-    std::cout << "White Balance - Green Ratio - Min Value: "
-              << response.whitebalance().green_ratio().minvalue() << std::endl;
-    std::cout << "White Balance - Green Ratio - Max Value: "
-              << response.whitebalance().green_ratio().maxvalue() << std::endl;
-    std::cout << "White Balance - Blue Ratio - Current Value: "
-              << response.whitebalance().blue_ratio().currentvalue()
-              << std::endl;
-    std::cout << "White Balance - Blue Ratio - Min Value: "
-              << response.whitebalance().blue_ratio().minvalue() << std::endl;
-    std::cout << "White Balance - Blue Ratio - Max Value: "
-              << response.whitebalance().blue_ratio().maxvalue() << std::endl;
-    std::cout << "Image Size: " << response.imagesize() << std::endl;
+    capturing_settings.shutter_time.current_value =
+        response.shuttertime().currentvalue();
+    capturing_settings.shutter_time.min_value =
+        response.shuttertime().minvalue();
+    capturing_settings.shutter_time.max_value =
+        response.shuttertime().maxvalue();
+    capturing_settings.gain.current_value = response.gain().currentvalue();
+    capturing_settings.gain.min_value = response.gain().minvalue();
+    capturing_settings.gain.max_value = response.gain().maxvalue();
+    capturing_settings.white_balance.red_ratio.current_value =
+        response.whitebalance().red_ratio().currentvalue();
+    capturing_settings.white_balance.red_ratio.min_value =
+        response.whitebalance().red_ratio().minvalue();
+    capturing_settings.white_balance.red_ratio.max_value =
+        response.whitebalance().red_ratio().maxvalue();
+    capturing_settings.white_balance.green_ratio.current_value =
+        response.whitebalance().green_ratio().currentvalue();
+    capturing_settings.white_balance.green_ratio.min_value =
+        response.whitebalance().green_ratio().minvalue();
+    capturing_settings.white_balance.green_ratio.max_value =
+        response.whitebalance().green_ratio().maxvalue();
+    capturing_settings.white_balance.blue_ratio.current_value =
+        response.whitebalance().blue_ratio().currentvalue();
+    capturing_settings.white_balance.blue_ratio.min_value =
+        response.whitebalance().blue_ratio().minvalue();
+    capturing_settings.white_balance.blue_ratio.max_value =
+        response.whitebalance().blue_ratio().maxvalue();
+    capturing_settings.focus.current_value = response.focus().currentvalue();
+    capturing_settings.focus.min_value = response.focus().minvalue();
+    capturing_settings.focus.max_value = response.focus().maxvalue();
+    capturing_settings.image_size = response.imagesize();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
   } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
   }
-
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
+
+/*
 grpc::Status EIHCameraApiClient::setCapturingSettings() {
   grpc::ClientContext context;
   TmEIHCamera::setCapturingSettingsRequest request;
@@ -328,7 +317,7 @@ grpc::Status EIHCameraApiClient::setCapturingSettings() {
 
   return status;
 }
-
+/*
 grpc::Status EIHCameraApiClient::getShutterTime() {
   grpc::ClientContext context;
   google::protobuf::Empty request;

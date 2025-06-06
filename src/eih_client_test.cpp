@@ -6,6 +6,7 @@
 
 #include "eih_camera_api_client.h"
 using namespace TmEIHCamera;
+// #define TEST_IMAGE_DATA
 
 int main() {
   std::string server_address = "172.25.181.19:15567";
@@ -77,7 +78,44 @@ int main() {
   std::cout << "  handeye_ry: " << hand_eye_array.handeye_ry << std::endl;
   std::cout << "  handeye_rz: " << hand_eye_array.handeye_rz << std::endl;
 
-// #define TEST_IMAGE_DATA
+  TmEIHConfig::CapturingSettings capturing_settings;
+  client.getCapturingSettings(grpc_result, capturing_settings);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "ShutterTime: " << capturing_settings.shutter_time.current_value
+            << " (min: " << capturing_settings.shutter_time.min_value
+            << ", max: " << capturing_settings.shutter_time.max_value << ")"
+            << std::endl;
+  std::cout << "Gain: " << capturing_settings.gain.current_value
+            << " (min: " << capturing_settings.gain.min_value
+            << ", max: " << capturing_settings.gain.max_value << ")"
+            << std::endl;
+  std::cout << "WhiteBalance: " << std::endl;
+  std::cout << "  RedRatio: "
+            << capturing_settings.white_balance.red_ratio.current_value
+            << " (min: " << capturing_settings.white_balance.red_ratio.min_value
+            << ", max: " << capturing_settings.white_balance.red_ratio.max_value
+            << ")" << std::endl;
+  std::cout << "  GreenRatio: "
+            << capturing_settings.white_balance.green_ratio.current_value
+            << " (min: "
+            << capturing_settings.white_balance.green_ratio.min_value
+            << ", max: "
+            << capturing_settings.white_balance.green_ratio.max_value << ")"
+            << std::endl;
+  std::cout << "  BlueRatio: "
+            << capturing_settings.white_balance.blue_ratio.current_value
+            << " (min: "
+            << capturing_settings.white_balance.blue_ratio.min_value
+            << ", max: "
+            << capturing_settings.white_balance.blue_ratio.max_value << ")"
+            << std::endl;
+  std::cout << "Focus: " << capturing_settings.focus.current_value
+            << " (min: " << capturing_settings.focus.min_value
+            << ", max: " << capturing_settings.focus.max_value << ")"
+            << std::endl;
+  std::cout << "ImageSize: " << capturing_settings.image_size << std::endl;
+
 #ifdef TEST_IMAGE_DATA
   // std::vector<unsigned char> byte_data;
   // TmEIHConfig::Image::Data eih_img;
