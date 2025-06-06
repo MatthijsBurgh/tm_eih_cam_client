@@ -123,6 +123,9 @@ struct Image {
     int image_height;
     std::string pixel_format;  // MONO, RGB
   };
+
+  Data data;
+  Configuration config;
 };
 
 struct CapturingSettings {
