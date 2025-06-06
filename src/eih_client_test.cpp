@@ -116,6 +116,62 @@ int main() {
             << std::endl;
   std::cout << "ImageSize: " << capturing_settings.image_size << std::endl;
 
+  std::cout << "----------------------------------------------------------"
+            << std::endl;
+  std::cout << "Single-function test:" << std::endl;
+  std::cout << "----------------------------------------------------------"
+            << std::endl;
+  TmEIHConfig::CaptureSettingValue shutter_time;
+  client.getShutterTime(grpc_result, shutter_time);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "ShutterTime: " << shutter_time.current_value
+            << " (min: " << shutter_time.min_value
+            << ", max: " << shutter_time.max_value << ")" << std::endl;
+
+  TmEIHConfig::CaptureSettingValue gain;
+  client.getGain(grpc_result, gain);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "Gain: " << gain.current_value << " (min: " << gain.min_value
+            << ", max: " << gain.max_value << ")" << std::endl;
+
+  TmEIHConfig::WhiteBalance white_balance;
+  client.getWhiteBalance(grpc_result, white_balance);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "WhiteBalance: " << std::endl;
+  std::cout << "  RedRatio: " << white_balance.red_ratio.current_value
+            << " (min: " << white_balance.red_ratio.min_value
+            << ", max: " << white_balance.red_ratio.max_value << ")"
+            << std::endl;
+  std::cout << "  GreenRatio: " << white_balance.green_ratio.current_value
+            << " (min: " << white_balance.green_ratio.min_value
+            << ", max: " << white_balance.green_ratio.max_value << ")"
+            << std::endl;
+  std::cout << "  BlueRatio: " << white_balance.blue_ratio.current_value
+            << " (min: " << white_balance.blue_ratio.min_value
+            << ", max: " << white_balance.blue_ratio.max_value << ")"
+            << std::endl;
+
+  TmEIHConfig::CaptureSettingValue focus;
+  client.getFocus(grpc_result, focus);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "Focus: " << focus.current_value << " (min: " << focus.min_value
+            << ", max: " << focus.max_value << ")" << std::endl;
+
+  std::string image_size;
+  client.getImageSize(grpc_result, image_size);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "ImageSize: " << image_size << std::endl;
+  std::cout << "----------------------------------------------------------"
+            << std::endl;
+  std::cout << "EIH Client Test Completed" << std::endl;
+  std::cout << "----------------------------------------------------------"
+            << std::endl;
+
 #ifdef TEST_IMAGE_DATA
   // std::vector<unsigned char> byte_data;
   // TmEIHConfig::Image::Data eih_img;

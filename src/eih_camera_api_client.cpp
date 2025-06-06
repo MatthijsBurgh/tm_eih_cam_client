@@ -317,33 +317,28 @@ grpc::Status EIHCameraApiClient::setCapturingSettings() {
 
   return status;
 }
-/*
-grpc::Status EIHCameraApiClient::getShutterTime() {
+*/
+bool EIHCameraApiClient::getShutterTime(
+    GrpcResult &result, TmEIHConfig::CaptureSettingValue &shutter_time) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   getShutterTimeResponse response;
 
-  grpc::Status status = m_Stub->getShutterTime(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+  grpc::Status status = stub_->getShutterTime(&context, request, &response);
   if (status.ok()) {
-    std::cout << "Shutter time retrieved successfully." << std::endl;
-    std::cout << "Current value: " << response.shuttertime().currentvalue()
-              << std::endl;
-    std::cout << "Minimum value: " << response.shuttertime().minvalue()
-              << std::endl;
-    std::cout << "Maximum value: " << response.shuttertime().maxvalue()
-              << std::endl;
+    shutter_time.current_value = response.shuttertime().currentvalue();
+    shutter_time.min_value = response.shuttertime().minvalue();
+    shutter_time.max_value = response.shuttertime().maxvalue();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
   } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
-
+/*
 grpc::Status EIHCameraApiClient::setShutterTime() {
   grpc::ClientContext context;
   TmEIHCamera::setShutterTimeRequest request;
@@ -375,30 +370,28 @@ grpc::Status EIHCameraApiClient::setShutterTime() {
 
   return status;
 }
-
-grpc::Status EIHCameraApiClient::getGain() {
+*/
+bool EIHCameraApiClient::getGain(GrpcResult &result,
+                                 TmEIHConfig::CaptureSettingValue &gain) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   TmEIHCamera::getGainResponse response;
 
-  grpc::Status status = m_Stub->getGain(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+  grpc::Status status = stub_->getGain(&context, request, &response);
   if (status.ok()) {
-    std::cout << "Gain retrieved successfully." << std::endl;
-    std::cout << "Current value: " << response.gain().currentvalue()
-              << std::endl;
-    std::cout << "Minimum value: " << response.gain().minvalue() << std::endl;
-    std::cout << "Maximum value: " << response.gain().maxvalue() << std::endl;
+    gain.current_value = response.gain().currentvalue();
+    gain.min_value = response.gain().minvalue();
+    gain.max_value = response.gain().maxvalue();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
   } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
+/*
 grpc::Status EIHCameraApiClient::setGain() {
   grpc::ClientContext context;
   TmEIHCamera::setGainRequest request;
@@ -430,40 +423,43 @@ grpc::Status EIHCameraApiClient::setGain() {
 
   return status;
 }
-
-grpc::Status EIHCameraApiClient::getWhiteBalance() {
+*/
+bool EIHCameraApiClient::getWhiteBalance(
+    GrpcResult &result, TmEIHConfig::WhiteBalance &white_balance) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   TmEIHCamera::getWhiteBalanceResponse response;
 
-  grpc::Status status = m_Stub->getWhiteBalance(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+  grpc::Status status = stub_->getWhiteBalance(&context, request, &response);
   if (status.ok()) {
-    std::cout << "White balance retrieved successfully." << std::endl;
-    const TmEIHCamera::WhiteBalance &whiteBalance = response.whitebalance();
-    std::cout << "Red Ratio: Current: "
-              << whiteBalance.red_ratio().currentvalue()
-              << ", Min: " << whiteBalance.red_ratio().minvalue()
-              << ", Max: " << whiteBalance.red_ratio().maxvalue() << std::endl;
-    std::cout << "Green Ratio: Current: "
-              << whiteBalance.green_ratio().currentvalue()
-              << ", Min: " << whiteBalance.green_ratio().minvalue()
-              << ", Max: " << whiteBalance.green_ratio().maxvalue()
-              << std::endl;
-    std::cout << "Blue Ratio: Current: "
-              << whiteBalance.blue_ratio().currentvalue()
-              << ", Min: " << whiteBalance.blue_ratio().minvalue()
-              << ", Max: " << whiteBalance.blue_ratio().maxvalue() << std::endl;
+    white_balance.red_ratio.current_value =
+        response.whitebalance().red_ratio().currentvalue();
+    white_balance.red_ratio.min_value =
+        response.whitebalance().red_ratio().minvalue();
+    white_balance.red_ratio.max_value =
+        response.whitebalance().red_ratio().maxvalue();
+    white_balance.green_ratio.current_value =
+        response.whitebalance().green_ratio().currentvalue();
+    white_balance.green_ratio.min_value =
+        response.whitebalance().green_ratio().minvalue();
+    white_balance.green_ratio.max_value =
+        response.whitebalance().green_ratio().maxvalue();
+    white_balance.blue_ratio.current_value =
+        response.whitebalance().blue_ratio().currentvalue();
+    white_balance.blue_ratio.min_value =
+        response.whitebalance().blue_ratio().minvalue();
+    white_balance.blue_ratio.max_value =
+        response.whitebalance().blue_ratio().maxvalue();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
   } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
+/*
 grpc::Status EIHCameraApiClient::setWhiteBalance() {
   grpc::ClientContext context;
   TmEIHCamera::setWhiteBalanceRequest request;
@@ -509,31 +505,28 @@ grpc::Status EIHCameraApiClient::setWhiteBalance() {
 
   return status;
 }
-
-grpc::Status EIHCameraApiClient::getFocus() {
+*/
+bool EIHCameraApiClient::getFocus(GrpcResult &result,
+                                  TmEIHConfig::CaptureSettingValue &focus) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   TmEIHCamera::getFocusResponse response;
 
-  grpc::Status status = m_Stub->getFocus(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+  grpc::Status status = stub_->getFocus(&context, request, &response);
   if (status.ok()) {
-    std::cout << "Focus parameters retrieved successfully." << std::endl;
-    std::cout << "Current value: " << response.focus().currentvalue()
-              << std::endl;
-    std::cout << "Minimum value: " << response.focus().minvalue() << std::endl;
-    std::cout << "Maximum value: " << response.focus().maxvalue() << std::endl;
+    focus.current_value = response.focus().currentvalue();
+    focus.min_value = response.focus().minvalue();
+    focus.max_value = response.focus().maxvalue();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
   } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
-
+/*
 grpc::Status EIHCameraApiClient::setFocus() {
   grpc::ClientContext context;
   TmEIHCamera::setFocusRequest request;
@@ -565,25 +558,26 @@ grpc::Status EIHCameraApiClient::setFocus() {
 
   return status;
 }
-grpc::Status EIHCameraApiClient::getImageSize() {
+*/
+bool EIHCameraApiClient::getImageSize(GrpcResult &result,
+                                      std::string &image_size) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   TmEIHCamera::getImageSizeResponse response;
-  grpc::Status status = m_Stub->getImageSize(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-  if (status.ok()) {
-    std::cout << "Image size retrieved successfully." << std::endl;
-    std::cout << "Image size: " << response.imagesize() << std::endl;
-  } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
-  }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
 
-  return status;
+  grpc::Status status = stub_->getImageSize(&context, request, &response);
+  if (status.ok()) {
+    image_size = response.imagesize();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
 }
+/*
 grpc::Status EIHCameraApiClient::setImageSize() {
   grpc::ClientContext context;
   TmEIHCamera::setImageSizeRequest request;
