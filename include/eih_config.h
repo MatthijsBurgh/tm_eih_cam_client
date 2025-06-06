@@ -49,6 +49,7 @@ struct WhiteBalance {
   CaptureSettingValue blue_ratio;
 };
 
+#ifdef ORIGINAL_PROTOBUF_STRUCT
 struct Camera {
   struct Information {
     std::string serial_number;
@@ -67,7 +68,7 @@ struct Camera {
 
   struct Image {
     struct Data {
-      std::vector<uint8_t> encode_string;  // img raw data
+      std::vector<uint8_t> encode_string;  // image raw data
     };
     struct Configuration {
       std::string image_type;  // Only support'png'
@@ -94,6 +95,45 @@ struct Camera {
   CapturingSettings capturing_settings;
   Image image;
 };  // Camera
+#else
+struct Information {
+  std::string serial_number;
+};
+
+struct Intrinsics {
+  float focus_value;
+  int image_width;
+  int image_height;
+  CameraMatrix camera_matrix;
+  DistortionCoefficients distortion_coefficients;
+};
+
+struct HandEyeParameters {
+  HandEyeArray hand_eye_array;
+};
+
+struct Image {
+  struct Data {
+    std::vector<uint8_t> encode_string;  // image raw data
+  };
+  struct Configuration {
+    std::string image_type;  // Only support 'png'
+    std::string image_size;  // 1M:1280*960, 5M:2592*1944
+    int image_width;
+    int image_height;
+    std::string pixel_format;  // MONO, RGB
+  };
+};
+
+struct CapturingSettings {
+  CaptureSettingValue shutter_time;
+  CaptureSettingValue gain;
+  WhiteBalance white_balance;
+  CaptureSettingValue focus;
+  std::string image_size;  // 1M:1280*960, 5M:2592*1944
+};
+
+#endif
 
 // ref from EIHCameraAPI.proto ------------
 struct SerialNumberRequest {
