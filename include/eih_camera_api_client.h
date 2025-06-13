@@ -46,7 +46,9 @@ class EIHCameraApiClient {
 
   bool getCapturingSettings(GrpcResult &result,
                             TmEIHConfig::CapturingSettings &capturing_settings);
-  // bool setCapturingSettings();
+  bool setCapturingSettings(
+      GrpcResult &result,
+      const TmEIHConfig::SetCapturingSettingsRequest &capturing_settings_req);
 
   bool getShutterTime(GrpcResult &result,
                       TmEIHConfig::CaptureSettingValue &shutter_time);

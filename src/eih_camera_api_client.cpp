@@ -201,6 +201,39 @@ bool EIHCameraApiClient::getCapturingSettings(
   }
 }
 
+bool EIHCameraApiClient::setCapturingSettings(
+    GrpcResult &result,
+    const TmEIHConfig::SetCapturingSettingsRequest &capturing_settings_req) {
+  grpc::ClientContext context;
+  TmEIHCamera::setCapturingSettingsRequest request;
+  google::protobuf::Empty response;
+
+  // Set request parameters
+  request.set_shuttertime(capturing_settings_req.shutter_time);     // 134~66371
+  request.set_gain(capturing_settings_req.gain);                    // 0~100
+  request.set_wb_redratio(capturing_settings_req.wb_redratio);      // 22~121
+  request.set_wb_greenratio(capturing_settings_req.wb_greenratio);  // 1~1
+  request.set_wb_blueratio(capturing_settings_req.wb_blueratio);    // 34~94
+  request.set_focus(capturing_settings_req.focus);                  // 0~8
+  request.set_imagesize(capturing_settings_req.image_size);         // 1M/5M
+
+  grpc::Status status =
+      stub_->setCapturingSettings(&context, request, &response);
+
+  if (status.ok()) {
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Capturing settings updated successfully."
+              << std::endl;  // TO DO: remove or not
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    std::cout << "RPC failed: " << status.error_code() << ": "
+              << status.error_message() << std::endl;
+    return false;
+  }
+}
 /*
 grpc::Status EIHCameraApiClient::setCapturingSettings() {
   grpc::ClientContext context;
