@@ -29,7 +29,8 @@
 				"ms-vscode.cpptools-extension-pack",
 				"ms-vscode.cmake-tools",
 				"ms-python.python",
-				"cliffordfajardo.highlight-line-vscode"
+				"cliffordfajardo.highlight-line-vscode",
+				"balmacefa.linehighlightbookmarkvscode"
 			]
 		}
 	}
