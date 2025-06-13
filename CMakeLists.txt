@@ -92,17 +92,20 @@ add_executable(image_sub
 
 ament_target_dependencies(image_sub rclcpp sensor_msgs cv_bridge OpenCV)
 
-# eih client test
-add_executable(eih_client_test
-  src/eih_client_test.cpp
+# eih client test get
+add_executable(eih_client_test_get
+  src/eih_client_test_get.cpp
   )
 
-target_link_libraries(eih_client_test
+target_link_libraries(eih_client_test_get
   eihcam_api_client)
 
-ament_target_dependencies(eih_client_test OpenCV)
+ament_target_dependencies(eih_client_test_get OpenCV)
 
-install(TARGETS eih_client_pub image_sub eih_client_test
+install(TARGETS 
+  eih_client_pub
+  image_sub
+  eih_client_test_get
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY launch/
