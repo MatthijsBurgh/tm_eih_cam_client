@@ -34,7 +34,8 @@ bool EIHCameraApiClient::isCameraConnected(
   }
 }
 
-bool EIHCameraApiClient::getIntrinsics(
+bool EIHCameraApiClient::getIntrinsics(  // get all intrinsics for different
+                                         // focus and resolution
     GrpcResult &result, std::vector<TmEIHConfig::Intrinsics> &intrinsics_res) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
@@ -43,8 +44,7 @@ bool EIHCameraApiClient::getIntrinsics(
 
   if (status.ok()) {
     intrinsics_res.clear();
-    for (const auto &intrinsics :      // TO DO: fix multi
-         response.cam_intrinsics()) {  // if multi cameras
+    for (const auto &intrinsics : response.cam_intrinsics()) {
       TmEIHConfig::Intrinsics ci;
       ci.focus_value = intrinsics.focusvalue();
       ci.image_width = intrinsics.imagewidth();

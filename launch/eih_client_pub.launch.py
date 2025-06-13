@@ -15,6 +15,7 @@ def generate_launch_description():
         Node(
             package='eih_client',
             executable='eih_client_pub',
+            output='screen',
             parameters=[{'robot_ip': LaunchConfiguration('robot_ip')}],
         ),
     ])
