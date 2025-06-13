@@ -9,7 +9,7 @@ using namespace TmEIHCamera;
 // #define TEST_IMAGE_DATA
 
 int main() {
-  std::string server_address = "172.25.181.19:15567";
+  std::string server_address = "172.25.181.19:15567";  // TO DO :remove
 
   EIHCameraApiClient client(server_address);
   GrpcResult grpc_result;

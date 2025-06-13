@@ -151,45 +151,6 @@ bool EIHCameraApiClient::getImageConfiguration(
   }
 }
 
-/*
-grpc::Status EIHCameraApiClient::terminateCameraConnection() {
-  grpc::ClientContext context;
-  const google::protobuf::Empty request;
-  google::protobuf::Empty response;
-
-  grpc::Status status =
-      m_Stub->terminateCameraConnection(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-  if (status.ok()) {
-    std::cout << "Camera connection terminated successfully." << std::endl;
-  } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
-  }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
-}
-grpc::Status EIHCameraApiClient::resumeCameraConnection() {
-  grpc::ClientContext context;
-  const google::protobuf::Empty request;
-  google::protobuf::Empty response;
-
-  grpc::Status status =
-      m_Stub->resumeCameraConnection(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-  if (status.ok()) {
-    std::cout << "Camera connection resumed successfully." << std::endl;
-  } else {
-    std::cout << "RPC failed: " << status.error_code() << ": "
-              << status.error_message() << std::endl;
-  }
-  return status;
-}
-*/
 bool EIHCameraApiClient::getCapturingSettings(
     GrpcResult &result, TmEIHConfig::CapturingSettings &capturing_settings) {
   grpc::ClientContext context;
