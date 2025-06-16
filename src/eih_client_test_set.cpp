@@ -31,10 +31,17 @@ int main() {
   // set shutter time
   int shutter_time = 36088;
   client.setShutterTime(grpc_result, shutter_time);
-
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
   std::cout << "-------------------" << std::endl;
+
+  // set gain
+  int gain = 4;
+  client.setGain(grpc_result, gain);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
 #endif
 
   return 0;
