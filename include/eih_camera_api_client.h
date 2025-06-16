@@ -52,7 +52,7 @@ class EIHCameraApiClient {
 
   bool getShutterTime(GrpcResult &result,
                       TmEIHConfig::CaptureSettingValue &shutter_time);
-  // bool setShutterTime();
+  bool setShutterTime(GrpcResult &result, const int &shutter_time);
 
   bool getGain(GrpcResult &result, TmEIHConfig::CaptureSettingValue &gain);
   // bool setGain();

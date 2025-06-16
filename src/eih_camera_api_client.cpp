@@ -208,7 +208,6 @@ bool EIHCameraApiClient::setCapturingSettings(
   TmEIHCamera::setCapturingSettingsRequest request;
   google::protobuf::Empty response;
 
-  // Set request parameters
   request.set_shuttertime(capturing_settings_req.shutter_time);     // 134~66371
   request.set_gain(capturing_settings_req.gain);                    // 0~100
   request.set_wb_redratio(capturing_settings_req.wb_redratio);      // 22~121
@@ -223,8 +222,7 @@ bool EIHCameraApiClient::setCapturingSettings(
   if (status.ok()) {
     result.status = StatusCode::SUCCESS;
     result.error_message.clear();
-    std::cout << "Capturing settings updated successfully."
-              << std::endl;  // TO DO: remove or not
+    std::cout << "Capturing settings updated successfully." << std::endl;
     return true;
   } else {
     result.status = StatusCode::FAIL;
@@ -332,39 +330,31 @@ bool EIHCameraApiClient::getShutterTime(
     return false;
   }
 }
-/*
-grpc::Status EIHCameraApiClient::setShutterTime() {
+
+bool EIHCameraApiClient::setShutterTime(GrpcResult &result,
+                                        const int &shutter_time) {
   grpc::ClientContext context;
   TmEIHCamera::setShutterTimeRequest request;
-  int _shuttertime;
-  std::cout << "Enter shutter time(134~66371): ";
-  // std::cin >> _shuttertime;
-  while (!(std::cin >> _shuttertime)) {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Invalid argument. Please input a number again:";
-  }
-
-  // Set request parameter
-  request.set_shuttertime(_shuttertime);
-
   google::protobuf::Empty response;
 
-  grpc::Status status = m_Stub->setShutterTime(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+  request.set_shuttertime(shutter_time);  // 134~66371
+
+  grpc::Status status = stub_->setShutterTime(&context, request, &response);
+
   if (status.ok()) {
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
     std::cout << "Shutter time set successfully." << std::endl;
+    return true;
   } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
     std::cout << "RPC failed: " << status.error_code() << ": "
               << status.error_message() << std::endl;
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
-*/
+
 bool EIHCameraApiClient::getGain(GrpcResult &result,
                                  TmEIHConfig::CaptureSettingValue &gain) {
   grpc::ClientContext context;

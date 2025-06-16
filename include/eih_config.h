@@ -160,9 +160,9 @@ struct SetCapturingSettingsRequest {
 struct GetShutterTimeResponse {
   CaptureSettingValue shutter_time;
 };
-struct SetShutterTimeRequest {
-  int shutter_time;
-};
+// struct SetShutterTimeRequest {
+//   int shutter_time;
+// };
 
 struct GetGainResponse {
   CaptureSettingValue gain;
