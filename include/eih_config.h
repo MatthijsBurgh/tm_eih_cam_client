@@ -9,38 +9,38 @@
 namespace TmEIHConfig {
 
 struct CameraMatrix {
-  float matrix_00;
-  float matrix_01;
-  float matrix_02;
-  float matrix_10;
-  float matrix_11;
-  float matrix_12;
-  float matrix_20;
-  float matrix_21;
-  float matrix_22;
+  float matrix_00 = -1;
+  float matrix_01 = -1;
+  float matrix_02 = -1;
+  float matrix_10 = -1;
+  float matrix_11 = -1;
+  float matrix_12 = -1;
+  float matrix_20 = -1;
+  float matrix_21 = -1;
+  float matrix_22 = -1;
 };
 
 struct DistortionCoefficients {
-  float coefficient_00;
-  float coefficient_10;
-  float coefficient_20;
-  float coefficient_30;
-  float coefficient_40;
+  float coefficient_00 = -1;
+  float coefficient_10 = -1;
+  float coefficient_20 = -1;
+  float coefficient_30 = -1;
+  float coefficient_40 = -1;
 };
 
 struct HandEyeArray {
-  float handeye_x;
-  float handeye_y;
-  float handeye_z;
-  float handeye_rx;
-  float handeye_ry;
-  float handeye_rz;
+  float handeye_x = -1;
+  float handeye_y = -1;
+  float handeye_z = -1;
+  float handeye_rx = -1;
+  float handeye_ry = -1;
+  float handeye_rz = -1;
 };
 
 struct CaptureSettingValue {
-  int current_value;
-  int min_value;
-  int max_value;
+  int current_value = -1;
+  int min_value = -1;
+  int max_value = -1;
 };
 
 struct WhiteBalance {
@@ -95,15 +95,16 @@ struct Camera {
   CapturingSettings capturing_settings;
   Image image;
 };  // Camera
+
 #else
-struct Information {
-  std::string serial_number;
-};
+// struct Information {
+//   std::string serial_number;
+// };
 
 struct Intrinsics {
-  float focus_value;
-  int image_width;
-  int image_height;
+  float focus_value = -1;
+  int image_width = -1;
+  int image_height = -1;
   CameraMatrix camera_matrix;
   DistortionCoefficients distortion_coefficients;
 };
@@ -119,8 +120,8 @@ struct Image {
   struct Configuration {
     std::string image_type;  // Only support 'png'
     std::string image_size;  // 1M:1280*960, 5M:2592*1944
-    int image_width;
-    int image_height;
+    int image_width = -1;
+    int image_height = -1;
     std::string pixel_format;  // MONO, RGB
   };
 
@@ -140,7 +141,7 @@ struct CapturingSettings {
 
 // ref from EIHCameraAPI.proto ------------
 struct IsCameraConnectedResponse {
-  bool is_camera_connected;
+  bool is_camera_connected = 0;
   std::string connection_message;
 };
 
