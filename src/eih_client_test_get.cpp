@@ -22,6 +22,7 @@ int main() {
             << std::endl;
   std::cout << "EIH connection message: " << eih_connect.connection_message
             << std::endl;
+  std::cout << "-------------------" << std::endl;
 
   TmEIHConfig::Image eih_img;
   client.getImageConfiguration(grpc_result, eih_img.config);
@@ -32,6 +33,7 @@ int main() {
   std::cout << "ImageWidth: " << eih_img.config.image_width << std::endl;
   std::cout << "ImageHeight: " << eih_img.config.image_height << std::endl;
   std::cout << "PixelFormat: " << eih_img.config.pixel_format << std::endl;
+  std::cout << "-------------------" << std::endl;
 
   std::vector<TmEIHConfig::Intrinsics> intrinsics_res;
   client.getIntrinsics(grpc_result, intrinsics_res);
@@ -66,6 +68,7 @@ int main() {
     std::cout << "  coefficient_40: "
               << ci.distortion_coefficients.coefficient_40 << std::endl;
   }
+  std::cout << "-------------------" << std::endl;
 
   TmEIHConfig::HandEyeArray hand_eye_array;
   client.getHandEyeParameters(grpc_result, hand_eye_array);
@@ -77,6 +80,7 @@ int main() {
   std::cout << "  handeye_rx: " << hand_eye_array.handeye_rx << std::endl;
   std::cout << "  handeye_ry: " << hand_eye_array.handeye_ry << std::endl;
   std::cout << "  handeye_rz: " << hand_eye_array.handeye_rz << std::endl;
+  std::cout << "-------------------" << std::endl;
 
   TmEIHConfig::CapturingSettings capturing_settings;
   client.getCapturingSettings(grpc_result, capturing_settings);
@@ -128,6 +132,7 @@ int main() {
   std::cout << "ShutterTime: " << shutter_time.current_value
             << " (min: " << shutter_time.min_value
             << ", max: " << shutter_time.max_value << ")" << std::endl;
+  std::cout << "-------------------" << std::endl;
 
   TmEIHConfig::CaptureSettingValue gain;
   client.getGain(grpc_result, gain);
@@ -135,6 +140,7 @@ int main() {
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
   std::cout << "Gain: " << gain.current_value << " (min: " << gain.min_value
             << ", max: " << gain.max_value << ")" << std::endl;
+  std::cout << "-------------------" << std::endl;
 
   TmEIHConfig::WhiteBalance white_balance;
   client.getWhiteBalance(grpc_result, white_balance);
@@ -153,6 +159,7 @@ int main() {
             << " (min: " << white_balance.blue_ratio.min_value
             << ", max: " << white_balance.blue_ratio.max_value << ")"
             << std::endl;
+  std::cout << "-------------------" << std::endl;
 
   TmEIHConfig::CaptureSettingValue focus;
   client.getFocus(grpc_result, focus);
@@ -160,6 +167,7 @@ int main() {
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
   std::cout << "Focus: " << focus.current_value << " (min: " << focus.min_value
             << ", max: " << focus.max_value << ")" << std::endl;
+  std::cout << "-------------------" << std::endl;
 
   std::string image_size;
   client.getImageSize(grpc_result, image_size);
