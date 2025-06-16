@@ -2,6 +2,7 @@
 #include <vector>
 
 #include "eih_camera_api_client.h"
+#define TEST_SINGLE_FUNCTION
 
 int main() {
   std::string server_address = "172.25.181.19:15567";  // TO DO :remove
@@ -9,6 +10,8 @@ int main() {
   TmEIHCamera::EIHCameraApiClient client(server_address);
   TmEIHCamera::GrpcResult grpc_result;
 
+#ifndef TEST_SINGLE_FUNCTION
+  // set capturing settings
   TmEIHConfig::SetCapturingSettingsRequest capturing_settings_req;
   capturing_settings_req.shutter_time = 36088;
   capturing_settings_req.gain = 3;
@@ -21,6 +24,18 @@ int main() {
 
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+#else
+  // Single-function
+  // set shutter time
+  int shutter_time = 36088;
+  client.setShutterTime(grpc_result, shutter_time);
+
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+#endif
 
   return 0;
 }
