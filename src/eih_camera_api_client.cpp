@@ -376,7 +376,7 @@ bool EIHCameraApiClient::getGain(GrpcResult &result,
   }
 }
 
-bool EIHCameraApiClient::setGain(GrpcResult &result, const int gain) {
+bool EIHCameraApiClient::setGain(GrpcResult &result, const int &gain) {
   grpc::ClientContext context;
   TmEIHCamera::setGainRequest request;
   google::protobuf::Empty response;
@@ -434,53 +434,34 @@ bool EIHCameraApiClient::getWhiteBalance(
     return false;
   }
 }
-/*
-grpc::Status EIHCameraApiClient::setWhiteBalance() {
+
+bool EIHCameraApiClient::setWhiteBalance(
+    GrpcResult &result,
+    TmEIHConfig::SetWhiteBalanceRequest &white_balance_req) {
   grpc::ClientContext context;
   TmEIHCamera::setWhiteBalanceRequest request;
-  int _wb_redratio, _wb_greenratio, _wb_blueratio;
-  std::cout << "Enter wb_redratio(22~121): ";
-  // std::cin >> _wb_redratio;
-  while (!(std::cin >> _wb_redratio)) {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Invalid argument. Please input a number again:";
-  }
-  std::cout << "Enter wb_greenratio(1~1): ";
-  // std::cin >> _wb_greenratio;
-  while (!(std::cin >> _wb_greenratio)) {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Invalid argument. Please input a number again:";
-  }
-  std::cout << "Enter wb_blueratio(34~94): ";
-  // std::cin >> _wb_blueratio;
-  while (!(std::cin >> _wb_blueratio)) {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Invalid argument. Please input a number again:";
-  }
-
-  request.set_wb_redratio(_wb_redratio);
-  request.set_wb_greenratio(_wb_greenratio);
-  request.set_wb_blueratio(_wb_blueratio);
-
   google::protobuf::Empty response;
-  grpc::Status status = m_Stub->setWhiteBalance(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+
+  request.set_wb_redratio(white_balance_req.wb_redratio);      // 22~121
+  request.set_wb_greenratio(white_balance_req.wb_greenratio);  // 1~1
+  request.set_wb_blueratio(white_balance_req.wb_blueratio);    // 34~94
+
+  grpc::Status status = stub_->setWhiteBalance(&context, request, &response);
+
   if (status.ok()) {
-    std::cout << "White balance set successfully." << std::endl;
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "White Balance set successfully." << std::endl;
+    return true;
   } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
     std::cout << "RPC failed: " << status.error_code() << ": "
               << status.error_message() << std::endl;
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
-*/
+
 bool EIHCameraApiClient::getFocus(GrpcResult &result,
                                   TmEIHConfig::CaptureSettingValue &focus) {
   grpc::ClientContext context;
@@ -501,39 +482,29 @@ bool EIHCameraApiClient::getFocus(GrpcResult &result,
     return false;
   }
 }
-/*
-grpc::Status EIHCameraApiClient::setFocus() {
+
+bool EIHCameraApiClient::setFocus(GrpcResult &result, const int &focus) {
   grpc::ClientContext context;
   TmEIHCamera::setFocusRequest request;
-  int _focus;
-  std::cout << "Enter focus(0~8): ";
-  // std::cin >> _focus;
-  while (!(std::cin >> _focus)) {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Invalid argument. Please input a number again:";
-  }
-
-  // Set request parameter
-  request.set_focus(_focus);
-
   google::protobuf::Empty response;
 
-  grpc::Status status = m_Stub->setFocus(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+  request.set_focus(focus);
+
+  grpc::Status status = stub_->setFocus(&context, request, &response);
   if (status.ok()) {
-    std::cout << "Focus value set successfully." << std::endl;
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Focus set successfully." << std::endl;
+    return true;
   } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
     std::cout << "RPC failed: " << status.error_code() << ": "
               << status.error_message() << std::endl;
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
-*/
+
 bool EIHCameraApiClient::getImageSize(GrpcResult &result,
                                       std::string &image_size) {
   grpc::ClientContext context;
@@ -552,32 +523,28 @@ bool EIHCameraApiClient::getImageSize(GrpcResult &result,
     return false;
   }
 }
-/*
-grpc::Status EIHCameraApiClient::setImageSize() {
+
+bool EIHCameraApiClient::setImageSize(GrpcResult &result,
+                                      const std::string &image_size) {
   grpc::ClientContext context;
   TmEIHCamera::setImageSizeRequest request;
-  std::string _imagesize;
-  std::cout << "Enter imagesize(1M/5M): ";
-  std::cin >> _imagesize;
-
-  // Set request parameter
-  request.set_imagesize(_imagesize);
-
   google::protobuf::Empty response;
 
-  grpc::Status status = m_Stub->setImageSize(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+  request.set_imagesize(image_size);
+
+  grpc::Status status = stub_->setImageSize(&context, request, &response);
   if (status.ok()) {
-    std::cout << "Image size set successfully." << std::endl;
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Image Size set successfully." << std::endl;
+    return true;
   } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
     std::cout << "RPC failed: " << status.error_code() << ": "
               << status.error_message() << std::endl;
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
-*/
+
 }  // namespace TmEIHCamera

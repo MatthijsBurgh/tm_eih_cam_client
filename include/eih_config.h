@@ -139,9 +139,6 @@ struct CapturingSettings {
 #endif
 
 // ref from EIHCameraAPI.proto ------------
-struct SerialNumberRequest {
-  std::string serial_number;
-};
 struct IsCameraConnectedResponse {
   bool is_camera_connected;
   std::string connection_message;
@@ -167,9 +164,9 @@ struct GetShutterTimeResponse {
 struct GetGainResponse {
   CaptureSettingValue gain;
 };
-struct SetGainRequest {
-  int gain;
-};
+// struct SetGainRequest {
+//   int gain;
+// };
 
 struct GetWhiteBalanceResponse {
   WhiteBalance white_balance;
@@ -183,16 +180,16 @@ struct SetWhiteBalanceRequest {
 struct GetFocusResponse {
   CaptureSettingValue focus;
 };
-struct SetFocusRequest {
-  int focus;
-};
+// struct SetFocusRequest {
+//   int focus;
+// };
 
 struct GetImageSizeResponse {
   std::string image_size;  // 1M:1280_960, 5M:2592_1944
 };
-struct SetImageSizeRequest {
-  std::string image_size;  // 1M:1280_960, 5M:2592_1944
-};
+// struct SetImageSizeRequest {
+//   std::string image_size;  // 1M:1280_960, 5M:2592_1944
+// };
 
 // struct GetIntrinsicsResponse {
 //   Camera::Intrinsics cam_intrinsics;

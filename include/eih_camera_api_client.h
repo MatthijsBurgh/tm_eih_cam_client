@@ -55,19 +55,20 @@ class EIHCameraApiClient {
   bool setShutterTime(GrpcResult &result, const int &shutter_time);
 
   bool getGain(GrpcResult &result, TmEIHConfig::CaptureSettingValue &gain);
-  bool setGain(GrpcResult &result, const int gain);
+  bool setGain(GrpcResult &result, const int &gain);
 
   bool getWhiteBalance(GrpcResult &result,
                        TmEIHConfig::WhiteBalance &white_balance);
-  // bool setWhiteBalance();
+  bool setWhiteBalance(GrpcResult &result,
+                       TmEIHConfig::SetWhiteBalanceRequest &white_balance_req);
 
   bool getFocus(GrpcResult &result, TmEIHConfig::CaptureSettingValue &focus);
-  // bool setFocus();
+  bool setFocus(GrpcResult &result, const int &focus);
 
   bool getImageSize(
       GrpcResult &result,
       std::string &image_size);  // e.g., "1M:1280*960", "5M:2592*1944"
-  // bool setImageSize();
+  bool setImageSize(GrpcResult &result, const std::string &image_size);
 };
 
 }  // namespace TmEIHCamera
