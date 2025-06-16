@@ -42,6 +42,30 @@ int main() {
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
   std::cout << "-------------------" << std::endl;
 
+  // set white balance
+  TmEIHConfig::SetWhiteBalanceRequest white_balance_req;
+  white_balance_req.wb_redratio = 62;
+  white_balance_req.wb_greenratio = 1;
+  white_balance_req.wb_blueratio = 51;
+  client.setWhiteBalance(grpc_result, white_balance_req);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+  // set focus
+  int focus = 7;
+  client.setFocus(grpc_result, focus);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+  // set image size
+  std::string image_size = "1M";
+  client.setImageSize(grpc_result, image_size);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
 #endif
 
   return 0;
