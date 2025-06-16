@@ -375,39 +375,30 @@ bool EIHCameraApiClient::getGain(GrpcResult &result,
     return false;
   }
 }
-/*
-grpc::Status EIHCameraApiClient::setGain() {
+
+bool EIHCameraApiClient::setGain(GrpcResult &result, const int gain) {
   grpc::ClientContext context;
   TmEIHCamera::setGainRequest request;
-  int _gain;
-  std::cout << "Enter gain(0~100): ";
-  // std::cin >> _gain;
-  while (!(std::cin >> _gain)) {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-    std::cout << "Invalid argument. Please input a number again:";
-  }
-
-  // Set request parameter
-  request.set_gain(_gain);
-
   google::protobuf::Empty response;
 
-  grpc::Status status = m_Stub->setGain(&context, request, &response);
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
+  request.set_gain(gain);  // 0~100
+
+  grpc::Status status = stub_->setGain(&context, request, &response);
+
   if (status.ok()) {
-    std::cout << "Shutter time set successfully." << std::endl;
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Gain set successfully." << std::endl;
+    return true;
   } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
     std::cout << "RPC failed: " << status.error_code() << ": "
               << status.error_message() << std::endl;
+    return false;
   }
-  std::cout << "----------------------------------------------------------"
-            << std::endl;
-
-  return status;
 }
-*/
+
 bool EIHCameraApiClient::getWhiteBalance(
     GrpcResult &result, TmEIHConfig::WhiteBalance &white_balance) {
   grpc::ClientContext context;
