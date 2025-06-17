@@ -4,9 +4,16 @@
 #include "eih_camera_api_client.h"
 #define TEST_SINGLE_FUNCTION
 
-int main() {
-  std::string server_address = "172.25.181.19:15567";  // TO DO :remove
-
+int main(int argc, char** argv) {
+  std::string robot_ip;
+  if (argc > 1) {
+    robot_ip = argv[1];
+  } else {
+    std::cerr << "Need input arg <robot_ip>,Example: 192.168.10.20"
+              << std::endl;
+    return 1;
+  }
+  std::string server_address = robot_ip + ":15567";
   TmEIHCamera::EIHCameraApiClient client(server_address);
   TmEIHCamera::GrpcResult grpc_result;
 
