@@ -15,7 +15,7 @@ EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
 }
 
 bool EIHCameraApiClient::isCameraConnected(
-    GrpcResult &result, TmEIHConfig::IsCameraConnectedResponse &cam_connect) {
+    GrpcResult &result, tm_eih_config::IsCameraConnectedResponse &cam_connect) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::isCameraConnectedResponse response;
@@ -36,7 +36,7 @@ bool EIHCameraApiClient::isCameraConnected(
 
 bool EIHCameraApiClient::getIntrinsics(  // get all intrinsics for different
                                          // focus and resolution
-    GrpcResult &result, std::vector<TmEIHConfig::Intrinsics> &intrinsics_res) {
+    GrpcResult &result, std::vector<tm_eih_config::Intrinsics> &intrinsics_res) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::getIntrinsicsResponse response;
@@ -45,7 +45,7 @@ bool EIHCameraApiClient::getIntrinsics(  // get all intrinsics for different
   if (status.ok()) {
     intrinsics_res.clear();
     for (const auto &intrinsics : response.cam_intrinsics()) {
-      TmEIHConfig::Intrinsics ci;
+      tm_eih_config::Intrinsics ci;
       ci.focus_value = intrinsics.focusvalue();
       ci.image_width = intrinsics.imagewidth();
       ci.image_height = intrinsics.imageheight();
@@ -82,7 +82,7 @@ bool EIHCameraApiClient::getIntrinsics(  // get all intrinsics for different
 }
 
 bool EIHCameraApiClient::getHandEyeParameters(
-    GrpcResult &result, TmEIHConfig::HandEyeArray &hand_eye_array) {
+    GrpcResult &result, tm_eih_config::HandEyeArray &hand_eye_array) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::Camera_HandEyeParameters response;
@@ -107,7 +107,7 @@ bool EIHCameraApiClient::getHandEyeParameters(
 }
 
 bool EIHCameraApiClient::getImageData(GrpcResult &result,
-                                      TmEIHConfig::Image::Data &data) {
+                                      tm_eih_config::Image::Data &data) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   TmEIHCamera::Camera_Image_Data response;
@@ -128,7 +128,7 @@ bool EIHCameraApiClient::getImageData(GrpcResult &result,
 }
 
 bool EIHCameraApiClient::getImageConfiguration(
-    GrpcResult &result, TmEIHConfig::Image::Configuration &image_config) {
+    GrpcResult &result, tm_eih_config::Image::Configuration &image_config) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
 
@@ -152,7 +152,7 @@ bool EIHCameraApiClient::getImageConfiguration(
 }
 
 bool EIHCameraApiClient::getCapturingSettings(
-    GrpcResult &result, TmEIHConfig::CapturingSettings &capturing_settings) {
+    GrpcResult &result, tm_eih_config::CapturingSettings &capturing_settings) {
   grpc::ClientContext context;
   const google::protobuf::Empty request;
   Camera_CapturingSettings response;
@@ -203,7 +203,7 @@ bool EIHCameraApiClient::getCapturingSettings(
 
 bool EIHCameraApiClient::setCapturingSettings(
     GrpcResult &result,
-    const TmEIHConfig::SetCapturingSettingsRequest &capturing_settings_req) {
+    const tm_eih_config::SetCapturingSettingsRequest &capturing_settings_req) {
   grpc::ClientContext context;
   TmEIHCamera::setCapturingSettingsRequest request;
   google::protobuf::Empty response;
@@ -311,7 +311,7 @@ grpc::Status EIHCameraApiClient::setCapturingSettings() {
 }
 */
 bool EIHCameraApiClient::getShutterTime(
-    GrpcResult &result, TmEIHConfig::CaptureSettingValue &shutter_time) {
+    GrpcResult &result, tm_eih_config::CaptureSettingValue &shutter_time) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   getShutterTimeResponse response;
@@ -356,7 +356,7 @@ bool EIHCameraApiClient::setShutterTime(GrpcResult &result,
 }
 
 bool EIHCameraApiClient::getGain(GrpcResult &result,
-                                 TmEIHConfig::CaptureSettingValue &gain) {
+                                 tm_eih_config::CaptureSettingValue &gain) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   TmEIHCamera::getGainResponse response;
@@ -400,7 +400,7 @@ bool EIHCameraApiClient::setGain(GrpcResult &result, const int &gain) {
 }
 
 bool EIHCameraApiClient::getWhiteBalance(
-    GrpcResult &result, TmEIHConfig::WhiteBalance &white_balance) {
+    GrpcResult &result, tm_eih_config::WhiteBalance &white_balance) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   TmEIHCamera::getWhiteBalanceResponse response;
@@ -437,7 +437,7 @@ bool EIHCameraApiClient::getWhiteBalance(
 
 bool EIHCameraApiClient::setWhiteBalance(
     GrpcResult &result,
-    TmEIHConfig::SetWhiteBalanceRequest &white_balance_req) {
+    tm_eih_config::SetWhiteBalanceRequest &white_balance_req) {
   grpc::ClientContext context;
   TmEIHCamera::setWhiteBalanceRequest request;
   google::protobuf::Empty response;
@@ -463,7 +463,7 @@ bool EIHCameraApiClient::setWhiteBalance(
 }
 
 bool EIHCameraApiClient::getFocus(GrpcResult &result,
-                                  TmEIHConfig::CaptureSettingValue &focus) {
+                                  tm_eih_config::CaptureSettingValue &focus) {
   grpc::ClientContext context;
   google::protobuf::Empty request;
   TmEIHCamera::getFocusResponse response;

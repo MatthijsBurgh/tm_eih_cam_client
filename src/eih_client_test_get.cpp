@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
   EIHCameraApiClient client(server_address);
   GrpcResult grpc_result;
 
-  TmEIHConfig::IsCameraConnectedResponse eih_connect;
+  tm_eih_config::IsCameraConnectedResponse eih_connect;
   client.isCameraConnected(grpc_result, eih_connect);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
             << std::endl;
   std::cout << "-------------------" << std::endl;
 
-  TmEIHConfig::Image eih_img;
+  tm_eih_config::Image eih_img;
   client.getImageConfiguration(grpc_result, eih_img.config);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
   std::cout << "PixelFormat: " << eih_img.config.pixel_format << std::endl;
   std::cout << "-------------------" << std::endl;
 
-  std::vector<TmEIHConfig::Intrinsics> intrinsics_res;
+  std::vector<tm_eih_config::Intrinsics> intrinsics_res;
   client.getIntrinsics(grpc_result, intrinsics_res);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -77,7 +77,7 @@ int main(int argc, char** argv) {
   }
   std::cout << "-------------------" << std::endl;
 
-  TmEIHConfig::HandEyeArray hand_eye_array;
+  tm_eih_config::HandEyeArray hand_eye_array;
   client.getHandEyeParameters(grpc_result, hand_eye_array);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -89,7 +89,7 @@ int main(int argc, char** argv) {
   std::cout << "  handeye_rz: " << hand_eye_array.handeye_rz << std::endl;
   std::cout << "-------------------" << std::endl;
 
-  TmEIHConfig::CapturingSettings capturing_settings;
+  tm_eih_config::CapturingSettings capturing_settings;
   client.getCapturingSettings(grpc_result, capturing_settings);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -132,7 +132,7 @@ int main(int argc, char** argv) {
   std::cout << "Single-function test:" << std::endl;
   std::cout << "----------------------------------------------------------"
             << std::endl;
-  TmEIHConfig::CaptureSettingValue shutter_time;
+  tm_eih_config::CaptureSettingValue shutter_time;
   client.getShutterTime(grpc_result, shutter_time);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -141,7 +141,7 @@ int main(int argc, char** argv) {
             << ", max: " << shutter_time.max_value << ")" << std::endl;
   std::cout << "-------------------" << std::endl;
 
-  TmEIHConfig::CaptureSettingValue gain;
+  tm_eih_config::CaptureSettingValue gain;
   client.getGain(grpc_result, gain);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
             << ", max: " << gain.max_value << ")" << std::endl;
   std::cout << "-------------------" << std::endl;
 
-  TmEIHConfig::WhiteBalance white_balance;
+  tm_eih_config::WhiteBalance white_balance;
   client.getWhiteBalance(grpc_result, white_balance);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
             << std::endl;
   std::cout << "-------------------" << std::endl;
 
-  TmEIHConfig::CaptureSettingValue focus;
+  tm_eih_config::CaptureSettingValue focus;
   client.getFocus(grpc_result, focus);
   std::cout << "grpc status: " << grpc_result.status << std::endl;
   std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
@@ -189,7 +189,7 @@ int main(int argc, char** argv) {
 
 #ifdef TEST_IMAGE_DATA
   // std::vector<unsigned char> byte_data;
-  // TmEIHConfig::Image::Data eih_img;
+  // tm_eih_config::Image::Data eih_img;
   while (true) {
     client.getImageData(grpc_result, eih_img.data);
     if (!eih_img.data.encode_string.empty()) {

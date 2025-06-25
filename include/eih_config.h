@@ -6,7 +6,7 @@
 #include <vector>
 
 // ref from EIHCamera.proto format
-namespace TmEIHConfig {
+namespace tm_eih_config {
 
 struct CameraMatrix {
   float matrix_00 = -1;
@@ -196,6 +196,6 @@ struct GetImageSizeResponse {
 //   Camera::Intrinsics cam_intrinsics;
 // };
 
-}  // namespace TmEIHConfig
+}  // namespace tm_eih_config
 
 #endif  // EIHCONFIG_H

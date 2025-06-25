@@ -42,7 +42,7 @@ class EIHClientPublisher : public rclcpp::Node {
   rclcpp::TimerBase::SharedPtr timer_;
 
   std::unique_ptr<EIHCameraApiClient> client_;
-  TmEIHConfig::Image eih_img_;
+  tm_eih_config::Image eih_img_;
   GrpcResult grpc_result_;
 
   // Image
@@ -72,9 +72,9 @@ class EIHClientPublisher : public rclcpp::Node {
 
   // CameraInfo
   void publish_camera_info(const std_msgs::msg::Header& header) {
-    std::vector<TmEIHConfig::Intrinsics> intrinsics_vec;
+    std::vector<tm_eih_config::Intrinsics> intrinsics_vec;
     if (!client_->getIntrinsics(grpc_result_, intrinsics_vec)) return;
-    TmEIHConfig::CaptureSettingValue focus;
+    tm_eih_config::CaptureSettingValue focus;
     client_->getFocus(grpc_result_, focus);
     client_->getImageConfiguration(grpc_result_, eih_img_.config);
     std::cout << "focus: " << focus.current_value << std::endl;

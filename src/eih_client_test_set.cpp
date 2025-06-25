@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
 
 #ifndef TEST_SINGLE_FUNCTION
   // set capturing settings
-  TmEIHConfig::SetCapturingSettingsRequest capturing_settings_req;
+  tm_eih_config::SetCapturingSettingsRequest capturing_settings_req;
   capturing_settings_req.shutter_time = 36088;
   capturing_settings_req.gain = 3;
   capturing_settings_req.wb_redratio = 61;
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
   std::cout << "-------------------" << std::endl;
 
   // set white balance
-  TmEIHConfig::SetWhiteBalanceRequest white_balance_req;
+  tm_eih_config::SetWhiteBalanceRequest white_balance_req;
   white_balance_req.wb_redratio = 62;
   white_balance_req.wb_greenratio = 1;
   white_balance_req.wb_blueratio = 51;
