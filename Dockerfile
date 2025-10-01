@@ -1,17 +1,5 @@
 FROM ros:humble
 
-LABEL maintainer="Steven Zheng <steven.zheng@tm-robot.com>"
-
-# solve ros GPG key error
-#RUN rm -f /etc/apt/sources.list.d/ros2-latest.list && \
-#  apt-get update && apt-get install -y \
-#  curl gnupg2 lsb-release && \
-#  curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-#  | gpg --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg && \
-#  echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
-#  http://packages.ros.org/ros2/ubuntu $(lsb_release -cs) main" \
-#  > /etc/apt/sources.list.d/ros2.list
-
 RUN apt-get update && apt-get install -y \
   build-essential autoconf libtool pkg-config \
   git automake curl cmake make g++ unzip libsystemd-dev \
@@ -31,6 +19,5 @@ RUN git clone --recurse-submodules --depth 1 --shallow-submodules -b ${GRPC_RELE
   ../.. && \
   # make -j$(nproc) && make install && make clean && ldconfig
   make -j4 && make install && make clean && ldconfig
-  # make && make install && make clean && ldconfig
 
 WORKDIR /workspaces
