@@ -1,0 +1,9 @@
+/**:
+  ros__parameters:
+    shutter_time: 36088   # 134 ~ 66371
+    gain: 4               # 0 ~ 100
+    wb_redratio: 62       # 22 ~ 121
+    wb_greenratio: 1      # 1
+    wb_blueratio: 51      # 34 ~ 94
+    focus: 6              # 2 ~ 8
+    image_size: "1M"      # 1M: 1280*960/ 5M: 2592*1944

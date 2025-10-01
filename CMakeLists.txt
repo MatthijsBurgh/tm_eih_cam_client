@@ -116,8 +116,10 @@ install(TARGETS
   eih_client_test_set
   DESTINATION lib/${PROJECT_NAME})
 
-install(DIRECTORY launch/
-  DESTINATION share/${PROJECT_NAME}/launch
+install(DIRECTORY 
+  launch
+  config
+  DESTINATION share/${PROJECT_NAME}
 )
 
 ament_package()

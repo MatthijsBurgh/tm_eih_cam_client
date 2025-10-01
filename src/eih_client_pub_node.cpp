@@ -6,6 +6,7 @@
 #include <sensor_msgs/msg/camera_info.hpp>
 #include <sensor_msgs/msg/image.hpp>
 #include <vector>
+#include <rcl_interfaces/msg/set_parameters_result.hpp>
 
 using namespace TmEIHCamera;
 
@@ -16,12 +17,27 @@ class EIHClientPublisher : public rclcpp::Node {
     this->declare_parameter<std::string>("frame_id", "eih_camera");
     this->declare_parameter<std::string>("image_encoding", "bgr8");
 
+    this->declare_parameter<int>("shutter_time", -1);
+    this->declare_parameter<int>("gain", -1);
+    this->declare_parameter<int>("wb_redratio", -1);
+    this->declare_parameter<int>("wb_greenratio", -1);
+    this->declare_parameter<int>("wb_blueratio", -1);
+    this->declare_parameter<int>("focus", -1);
+    this->declare_parameter<std::string>("image_size", "");
+
     std::string robot_ip_ = this->get_parameter("robot_ip").as_string();
     camera_addr_ = robot_ip_ + ":15567";
     frame_id_ = this->get_parameter("frame_id").as_string();
     image_encoding_ = this->get_parameter("image_encoding").as_string();
     client_ = std::make_unique<EIHCameraApiClient>(camera_addr_);
 
+    // init params
+    set_camera_params();
+
+    // register parameter change callback (will be invoked on ros2 param set)
+    param_cb_handle_ = this->add_on_set_parameters_callback(
+        std::bind(&EIHClientPublisher::on_params_change, this, std::placeholders::_1));
+    
     image_pub_ = this->create_publisher<sensor_msgs::msg::Image>(
         "/eih_camera/image_raw", rclcpp::SensorDataQoS());
     camera_info_pub_ = this->create_publisher<sensor_msgs::msg::CameraInfo>(
@@ -33,6 +49,8 @@ class EIHClientPublisher : public rclcpp::Node {
   }
 
  private:
+  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_cb_handle_;
+
   std::string camera_addr_;
   std::string frame_id_;
   std::string image_encoding_;
@@ -44,6 +62,50 @@ class EIHClientPublisher : public rclcpp::Node {
   std::unique_ptr<EIHCameraApiClient> client_;
   tm_eih_config::Image eih_img_;
   GrpcResult grpc_result_;
+
+  rcl_interfaces::msg::SetParametersResult on_params_change(const std::vector<rclcpp::Parameter> &params) {
+    rcl_interfaces::msg::SetParametersResult result;
+    result.successful = true;
+    // re-apply relevant camera params when any parameter changes
+    set_camera_params();
+    return result;
+  }
+
+  void set_camera_params() {
+    int shutter_time = this->get_parameter("shutter_time").as_int();
+    int gain = this->get_parameter("gain").as_int();
+    int wb_r = this->get_parameter("wb_redratio").as_int();
+    int wb_g = this->get_parameter("wb_greenratio").as_int();
+    int wb_b = this->get_parameter("wb_blueratio").as_int();
+    int focus = this->get_parameter("focus").as_int();
+    std::string image_size = this->get_parameter("image_size").as_string();
+
+    std::cout << "shutter_time: " << shutter_time << std::endl;
+    std::cout << "gain: " << gain << std::endl;
+    std::cout << "wb_redratio: " << wb_r << std::endl;
+    std::cout << "wb_greenratio: " << wb_g << std::endl;
+    std::cout << "wb_b: " << wb_b << std::endl;
+    std::cout << "focus: " << focus << std::endl;
+    std::cout << "image_size: " << image_size << std::endl;
+
+    bool any_setting = (shutter_time > 0) || (gain >= 0) || (wb_r >= 0) ||
+                     (wb_g >= 0) || (wb_b >= 0) || (focus >= 0) ||
+                     (!image_size.empty());
+    std::cout << "any_setting: " << any_setting << std::endl;
+
+    if (any_setting) {
+      tm_eih_config::SetCapturingSettingsRequest req;
+      if (shutter_time > 0) req.shutter_time = shutter_time;
+      if (gain >= 0) req.gain = gain;
+      if (wb_r >= 0) req.wb_redratio = wb_r;
+      if (wb_g >= 0) req.wb_greenratio = wb_g;
+      if (wb_b >= 0) req.wb_blueratio = wb_b;
+      if (focus >= 0) req.focus = focus;
+      if (!image_size.empty()) req.image_size = image_size;
+      client_->setCapturingSettings(grpc_result_, req);
+      RCLCPP_INFO(this->get_logger(), "Applied capturing settings via setCapturingSettings");
+    }
+  }
 
   // Image
   void publish_image() {
@@ -78,11 +140,12 @@ class EIHClientPublisher : public rclcpp::Node {
     client_->getFocus(grpc_result_, focus);
     client_->getImageConfiguration(grpc_result_, eih_img_.config);
     std::cout << "focus: " << focus.current_value << std::endl;
+    std::cout << "image width: " << eih_img_.config.image_width << std::endl;
     std::cout << "image height: " << eih_img_.config.image_height << std::endl;
 
     sensor_msgs::msg::CameraInfo cam_info;
     int mapped_focus = focus.current_value;
-    if (mapped_focus <= 1)
+    if (mapped_focus < 2)
       mapped_focus = 2;
     else if (mapped_focus > 7)
       mapped_focus = 7;
