@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(EIHClient)
+project(tm_eih_cam_client)
 
 include(common.cmake)
 
@@ -43,7 +43,9 @@ add_custom_command(
 # Include generated *.pb.h files
 include_directories("${CMAKE_CURRENT_BINARY_DIR}")
 
-# Find OpenCV
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
 
 # eihcam_grpc_proto
@@ -62,27 +64,62 @@ target_link_libraries(eihcam_grpc_proto
   ${_GRPC_GRPCPP}
   ${_PROTOBUF_LIBPROTOBUF})
   
+# eihcam_api_client
+add_library(eihcam_api_client
+  src/eih_camera_api_client.cpp
+  )
 
-# Add source files
-set(SOURCES
-    src/EIHCameraApiClient.cpp
-    src/EIHClient.cpp
+target_link_libraries(eihcam_api_client
+  eihcam_grpc_proto
+  )
+
+target_include_directories(eihcam_api_client PUBLIC include)
+
+# eih client node
+add_executable(eih_client_pub
+  src/eih_client_pub_node.cpp
+  )
+
+target_link_libraries(eih_client_pub
+  eihcam_api_client)
+
+ament_target_dependencies(eih_client_pub rclcpp sensor_msgs cv_bridge OpenCV)
+
+# image sub node
+add_executable(image_sub 
+  src/image_sub_node.cpp
+  )
+
+ament_target_dependencies(image_sub rclcpp sensor_msgs cv_bridge OpenCV)
+
+# eih client test get
+add_executable(eih_client_test_get
+  src/eih_client_test_get.cpp
+  )
+target_link_libraries(eih_client_test_get
+  eihcam_api_client)
+
+ament_target_dependencies(eih_client_test_get OpenCV)
+
+# eih client test set
+add_executable(eih_client_test_set
+  src/eih_client_test_set.cpp
+  )
+target_link_libraries(eih_client_test_set
+  eihcam_api_client
+  )
+
+install(TARGETS 
+  eih_client_pub
+  image_sub
+  eih_client_test_get
+  eih_client_test_set
+  DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY 
+  launch
+  config
+  DESTINATION share/${PROJECT_NAME}
 )
 
-# Add executable
-add_executable(${PROJECT_NAME} ${SOURCES})
-
-# Include OpenCV headers
-include_directories(${OpenCV_INCLUDE_DIRS})
-
-target_include_directories(${PROJECT_NAME} PRIVATE
-    include
-)
-
-target_link_libraries(${PROJECT_NAME}
-    eihcam_grpc_proto
-    ${_REFLECTION}
-    ${_GRPC_GRPCPP}
-    ${_PROTOBUF_LIBPROTOBUF}
-    ${OpenCV_LIBS}
-)
+ament_package()

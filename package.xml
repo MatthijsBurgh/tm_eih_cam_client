@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>tm_eih_cam_client</name>
+  <version>0.1.0</version>
+  <description>TM EIH camera gRPC client for ROS2 - uses the EIH gRPC API and proto definitions to provide image publishing and camera settings.</description>
+  <maintainer email="steven.zheng@tm-robot.com">steven.zheng</maintainer>
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>OpenCV</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+

@@ -1,0 +1,79 @@
+#include <iostream>
+#include <vector>
+
+#include "eih_camera_api_client.h"
+#define TEST_SINGLE_FUNCTION
+
+int main(int argc, char** argv) {
+  std::string robot_ip;
+  if (argc > 1) {
+    robot_ip = argv[1];
+  } else {
+    std::cerr << "Need input arg <robot_ip>,Example: 192.168.10.20"
+              << std::endl;
+    return 1;
+  }
+  std::string server_address = robot_ip + ":15567";
+  TmEIHCamera::EIHCameraApiClient client(server_address);
+  TmEIHCamera::GrpcResult grpc_result;
+
+#ifndef TEST_SINGLE_FUNCTION
+  // set capturing settings
+  tm_eih_config::SetCapturingSettingsRequest capturing_settings_req;
+  capturing_settings_req.shutter_time = 36088;
+  capturing_settings_req.gain = 3;
+  capturing_settings_req.wb_redratio = 61;
+  capturing_settings_req.wb_greenratio = 1;
+  capturing_settings_req.wb_blueratio = 50;
+  capturing_settings_req.focus = 6;
+  capturing_settings_req.image_size = "1M";  // 1M = 1280*960, 5M = 2592*1944
+  client.setCapturingSettings(grpc_result, capturing_settings_req);
+
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+#else
+  // Single-function
+  // set shutter time
+  int shutter_time = 36088;
+  client.setShutterTime(grpc_result, shutter_time);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+  // set gain
+  int gain = 4;
+  client.setGain(grpc_result, gain);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+  // set white balance
+  tm_eih_config::SetWhiteBalanceRequest white_balance_req;
+  white_balance_req.wb_redratio = 62;
+  white_balance_req.wb_greenratio = 1;
+  white_balance_req.wb_blueratio = 51;
+  client.setWhiteBalance(grpc_result, white_balance_req);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+  // set focus
+  int focus = 7;
+  client.setFocus(grpc_result, focus);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+  // set image size
+  std::string image_size = "1M";
+  client.setImageSize(grpc_result, image_size);
+  std::cout << "grpc status: " << grpc_result.status << std::endl;
+  std::cout << "grpc error_message: " << grpc_result.error_message << std::endl;
+  std::cout << "-------------------" << std::endl;
+
+#endif
+
+  return 0;
+}

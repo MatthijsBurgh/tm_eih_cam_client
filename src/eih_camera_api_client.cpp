@@ -1,0 +1,472 @@
+#include "eih_camera_api_client.h"
+
+#include <iostream>
+#include <memory>
+
+namespace TmEIHCamera {
+
+EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
+  grpc::ChannelArguments channel_args;
+  channel_args.SetMaxReceiveMessageSize(-1);
+  auto channel = grpc::CreateCustomChannel(
+      server_address, grpc::InsecureChannelCredentials(), channel_args);
+  stub_ = EIHCameraApi::NewStub(channel);
+}
+
+bool EIHCameraApiClient::isCameraConnected(
+    GrpcResult &result, tm_eih_config::IsCameraConnectedResponse &cam_connect) {
+  grpc::ClientContext context;
+  const google::protobuf::Empty request;
+  TmEIHCamera::isCameraConnectedResponse response;
+  grpc::Status status = stub_->isCameraConnected(&context, request, &response);
+
+  if (status.ok()) {
+    cam_connect.is_camera_connected = response.iscameraconnected();
+    cam_connect.connection_message = response.connection_message();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getIntrinsics(  // get all intrinsics for different
+                                         // focus and resolution
+    GrpcResult &result, std::vector<tm_eih_config::Intrinsics> &intrinsics_res) {
+  grpc::ClientContext context;
+  const google::protobuf::Empty request;
+  TmEIHCamera::getIntrinsicsResponse response;
+  grpc::Status status = stub_->getIntrinsics(&context, request, &response);
+
+  if (status.ok()) {
+    intrinsics_res.clear();
+    for (const auto &intrinsics : response.cam_intrinsics()) {
+      tm_eih_config::Intrinsics ci;
+      ci.focus_value = intrinsics.focusvalue();
+      ci.image_width = intrinsics.imagewidth();
+      ci.image_height = intrinsics.imageheight();
+      ci.camera_matrix.matrix_00 = intrinsics.cameramatrix().matrix_00();
+      ci.camera_matrix.matrix_01 = intrinsics.cameramatrix().matrix_01();
+      ci.camera_matrix.matrix_02 = intrinsics.cameramatrix().matrix_02();
+      ci.camera_matrix.matrix_10 = intrinsics.cameramatrix().matrix_10();
+      ci.camera_matrix.matrix_11 = intrinsics.cameramatrix().matrix_11();
+      ci.camera_matrix.matrix_12 = intrinsics.cameramatrix().matrix_12();
+      ci.camera_matrix.matrix_20 = intrinsics.cameramatrix().matrix_20();
+      ci.camera_matrix.matrix_21 = intrinsics.cameramatrix().matrix_21();
+      ci.camera_matrix.matrix_22 = intrinsics.cameramatrix().matrix_22();
+      ci.distortion_coefficients.coefficient_00 =
+          intrinsics.distortioncoefficients().coefficient_00();
+      ci.distortion_coefficients.coefficient_10 =
+          intrinsics.distortioncoefficients().coefficient_10();
+      ci.distortion_coefficients.coefficient_20 =
+          intrinsics.distortioncoefficients().coefficient_20();
+      ci.distortion_coefficients.coefficient_30 =
+          intrinsics.distortioncoefficients().coefficient_30();
+      ci.distortion_coefficients.coefficient_40 =
+          intrinsics.distortioncoefficients().coefficient_40();
+
+      intrinsics_res.push_back(ci);
+    }
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getHandEyeParameters(
+    GrpcResult &result, tm_eih_config::HandEyeArray &hand_eye_array) {
+  grpc::ClientContext context;
+  const google::protobuf::Empty request;
+  TmEIHCamera::Camera_HandEyeParameters response;
+  grpc::Status status =
+      stub_->getHandEyeParameters(&context, request, &response);
+
+  if (status.ok()) {
+    hand_eye_array.handeye_x = response.handeyearray().handeye_x();
+    hand_eye_array.handeye_y = response.handeyearray().handeye_y();
+    hand_eye_array.handeye_z = response.handeyearray().handeye_z();
+    hand_eye_array.handeye_rx = response.handeyearray().handeye_rx();
+    hand_eye_array.handeye_ry = response.handeyearray().handeye_ry();
+    hand_eye_array.handeye_rz = response.handeyearray().handeye_rz();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getImageData(GrpcResult &result,
+                                      tm_eih_config::Image::Data &data) {
+  grpc::ClientContext context;
+  const google::protobuf::Empty request;
+  TmEIHCamera::Camera_Image_Data response;
+  grpc::Status status = stub_->getImageData(&context, request, &response);
+
+  if (status.ok()) {
+    data.encode_string.assign(response.encodestring().begin(),
+                              response.encodestring().end());
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    data.encode_string.clear();
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_code();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getImageConfiguration(
+    GrpcResult &result, tm_eih_config::Image::Configuration &image_config) {
+  grpc::ClientContext context;
+  const google::protobuf::Empty request;
+
+  TmEIHCamera::Camera_Image_Configuration response;
+  grpc::Status status =
+      stub_->getImageConfiguration(&context, request, &response);
+
+  if (status.ok()) {
+    image_config.image_type = response.imagetype();
+    image_config.image_size = response.imagesize();
+    image_config.image_width = response.imagewidth();
+    image_config.image_height = response.imageheight();
+    image_config.pixel_format = response.pixelformat();
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getCapturingSettings(
+    GrpcResult &result, tm_eih_config::CapturingSettings &capturing_settings) {
+  grpc::ClientContext context;
+  const google::protobuf::Empty request;
+  Camera_CapturingSettings response;
+
+  grpc::Status status =
+      stub_->getCapturingSettings(&context, request, &response);
+  if (status.ok()) {
+    capturing_settings.shutter_time.current_value =
+        response.shuttertime().currentvalue();
+    capturing_settings.shutter_time.min_value =
+        response.shuttertime().minvalue();
+    capturing_settings.shutter_time.max_value =
+        response.shuttertime().maxvalue();
+    capturing_settings.gain.current_value = response.gain().currentvalue();
+    capturing_settings.gain.min_value = response.gain().minvalue();
+    capturing_settings.gain.max_value = response.gain().maxvalue();
+    capturing_settings.white_balance.red_ratio.current_value =
+        response.whitebalance().red_ratio().currentvalue();
+    capturing_settings.white_balance.red_ratio.min_value =
+        response.whitebalance().red_ratio().minvalue();
+    capturing_settings.white_balance.red_ratio.max_value =
+        response.whitebalance().red_ratio().maxvalue();
+    capturing_settings.white_balance.green_ratio.current_value =
+        response.whitebalance().green_ratio().currentvalue();
+    capturing_settings.white_balance.green_ratio.min_value =
+        response.whitebalance().green_ratio().minvalue();
+    capturing_settings.white_balance.green_ratio.max_value =
+        response.whitebalance().green_ratio().maxvalue();
+    capturing_settings.white_balance.blue_ratio.current_value =
+        response.whitebalance().blue_ratio().currentvalue();
+    capturing_settings.white_balance.blue_ratio.min_value =
+        response.whitebalance().blue_ratio().minvalue();
+    capturing_settings.white_balance.blue_ratio.max_value =
+        response.whitebalance().blue_ratio().maxvalue();
+    capturing_settings.focus.current_value = response.focus().currentvalue();
+    capturing_settings.focus.min_value = response.focus().minvalue();
+    capturing_settings.focus.max_value = response.focus().maxvalue();
+    capturing_settings.image_size = response.imagesize();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::setCapturingSettings(
+    GrpcResult &result,
+    const tm_eih_config::SetCapturingSettingsRequest &capturing_settings_req) {
+  grpc::ClientContext context;
+  TmEIHCamera::setCapturingSettingsRequest request;
+  google::protobuf::Empty response;
+
+  request.set_shuttertime(capturing_settings_req.shutter_time);     // 134~66371
+  request.set_gain(capturing_settings_req.gain);                    // 0~100
+  request.set_wb_redratio(capturing_settings_req.wb_redratio);      // 22~121
+  request.set_wb_greenratio(capturing_settings_req.wb_greenratio);  // 1~1
+  request.set_wb_blueratio(capturing_settings_req.wb_blueratio);    // 34~94
+  request.set_focus(capturing_settings_req.focus);                  // 0~8
+  request.set_imagesize(capturing_settings_req.image_size);         // 1M/5M
+
+  grpc::Status status =
+      stub_->setCapturingSettings(&context, request, &response);
+
+  if (status.ok()) {
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Capturing settings updated successfully." << std::endl;
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    std::cout << "RPC failed: " << status.error_code() << ": "
+              << status.error_message() << std::endl;
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getShutterTime(
+    GrpcResult &result, tm_eih_config::CaptureSettingValue &shutter_time) {
+  grpc::ClientContext context;
+  google::protobuf::Empty request;
+  getShutterTimeResponse response;
+
+  grpc::Status status = stub_->getShutterTime(&context, request, &response);
+  if (status.ok()) {
+    shutter_time.current_value = response.shuttertime().currentvalue();
+    shutter_time.min_value = response.shuttertime().minvalue();
+    shutter_time.max_value = response.shuttertime().maxvalue();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::setShutterTime(GrpcResult &result,
+                                        const int &shutter_time) {
+  grpc::ClientContext context;
+  TmEIHCamera::setShutterTimeRequest request;
+  google::protobuf::Empty response;
+
+  request.set_shuttertime(shutter_time);  // 134~66371
+
+  grpc::Status status = stub_->setShutterTime(&context, request, &response);
+
+  if (status.ok()) {
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Shutter time set successfully." << std::endl;
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    std::cout << "RPC failed: " << status.error_code() << ": "
+              << status.error_message() << std::endl;
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getGain(GrpcResult &result,
+                                 tm_eih_config::CaptureSettingValue &gain) {
+  grpc::ClientContext context;
+  google::protobuf::Empty request;
+  TmEIHCamera::getGainResponse response;
+
+  grpc::Status status = stub_->getGain(&context, request, &response);
+  if (status.ok()) {
+    gain.current_value = response.gain().currentvalue();
+    gain.min_value = response.gain().minvalue();
+    gain.max_value = response.gain().maxvalue();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::setGain(GrpcResult &result, const int &gain) {
+  grpc::ClientContext context;
+  TmEIHCamera::setGainRequest request;
+  google::protobuf::Empty response;
+
+  request.set_gain(gain);  // 0~100
+
+  grpc::Status status = stub_->setGain(&context, request, &response);
+
+  if (status.ok()) {
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Gain set successfully." << std::endl;
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    std::cout << "RPC failed: " << status.error_code() << ": "
+              << status.error_message() << std::endl;
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getWhiteBalance(
+    GrpcResult &result, tm_eih_config::WhiteBalance &white_balance) {
+  grpc::ClientContext context;
+  google::protobuf::Empty request;
+  TmEIHCamera::getWhiteBalanceResponse response;
+
+  grpc::Status status = stub_->getWhiteBalance(&context, request, &response);
+  if (status.ok()) {
+    white_balance.red_ratio.current_value =
+        response.whitebalance().red_ratio().currentvalue();
+    white_balance.red_ratio.min_value =
+        response.whitebalance().red_ratio().minvalue();
+    white_balance.red_ratio.max_value =
+        response.whitebalance().red_ratio().maxvalue();
+    white_balance.green_ratio.current_value =
+        response.whitebalance().green_ratio().currentvalue();
+    white_balance.green_ratio.min_value =
+        response.whitebalance().green_ratio().minvalue();
+    white_balance.green_ratio.max_value =
+        response.whitebalance().green_ratio().maxvalue();
+    white_balance.blue_ratio.current_value =
+        response.whitebalance().blue_ratio().currentvalue();
+    white_balance.blue_ratio.min_value =
+        response.whitebalance().blue_ratio().minvalue();
+    white_balance.blue_ratio.max_value =
+        response.whitebalance().blue_ratio().maxvalue();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::setWhiteBalance(
+    GrpcResult &result,
+    tm_eih_config::SetWhiteBalanceRequest &white_balance_req) {
+  grpc::ClientContext context;
+  TmEIHCamera::setWhiteBalanceRequest request;
+  google::protobuf::Empty response;
+
+  request.set_wb_redratio(white_balance_req.wb_redratio);      // 22~121
+  request.set_wb_greenratio(white_balance_req.wb_greenratio);  // 1~1
+  request.set_wb_blueratio(white_balance_req.wb_blueratio);    // 34~94
+
+  grpc::Status status = stub_->setWhiteBalance(&context, request, &response);
+
+  if (status.ok()) {
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "White Balance set successfully." << std::endl;
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    std::cout << "RPC failed: " << status.error_code() << ": "
+              << status.error_message() << std::endl;
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getFocus(GrpcResult &result,
+                                  tm_eih_config::CaptureSettingValue &focus) {
+  grpc::ClientContext context;
+  google::protobuf::Empty request;
+  TmEIHCamera::getFocusResponse response;
+
+  grpc::Status status = stub_->getFocus(&context, request, &response);
+  if (status.ok()) {
+    focus.current_value = response.focus().currentvalue();
+    focus.min_value = response.focus().minvalue();
+    focus.max_value = response.focus().maxvalue();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::setFocus(GrpcResult &result, const int &focus) {
+  grpc::ClientContext context;
+  TmEIHCamera::setFocusRequest request;
+  google::protobuf::Empty response;
+
+  request.set_focus(focus);
+
+  grpc::Status status = stub_->setFocus(&context, request, &response);
+  if (status.ok()) {
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Focus set successfully." << std::endl;
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    std::cout << "RPC failed: " << status.error_code() << ": "
+              << status.error_message() << std::endl;
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::getImageSize(GrpcResult &result,
+                                      std::string &image_size) {
+  grpc::ClientContext context;
+  google::protobuf::Empty request;
+  TmEIHCamera::getImageSizeResponse response;
+
+  grpc::Status status = stub_->getImageSize(&context, request, &response);
+  if (status.ok()) {
+    image_size = response.imagesize();
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    return false;
+  }
+}
+
+bool EIHCameraApiClient::setImageSize(GrpcResult &result,
+                                      const std::string &image_size) {
+  grpc::ClientContext context;
+  TmEIHCamera::setImageSizeRequest request;
+  google::protobuf::Empty response;
+
+  request.set_imagesize(image_size);
+
+  grpc::Status status = stub_->setImageSize(&context, request, &response);
+  if (status.ok()) {
+    result.status = StatusCode::SUCCESS;
+    result.error_message.clear();
+    std::cout << "Image Size set successfully." << std::endl;
+    return true;
+  } else {
+    result.status = StatusCode::FAIL;
+    result.error_message = status.error_message();
+    std::cout << "RPC failed: " << status.error_code() << ": "
+              << status.error_message() << std::endl;
+    return false;
+  }
+}
+
+}  // namespace TmEIHCamera
