@@ -33,6 +33,7 @@ class EIHClientPublisher : public rclcpp::Node {
 
     // init eih params
     get_eih_params();
+    set_params_to_eih_camera();
 
     // register parameter change callback (will be invoked on ros2 param set)
     params_cb_handle_ = this->add_on_set_parameters_callback(
@@ -68,7 +69,7 @@ class EIHClientPublisher : public rclcpp::Node {
     result.successful = true;
     // re-apply relevant camera params when any parameter changes
     assign_params(params);
-    set_camera_params();
+    set_params_to_eih_camera();
     return result;
   }
 
@@ -98,7 +99,7 @@ class EIHClientPublisher : public rclcpp::Node {
     }
   }
 
-  void set_camera_params() {
+  void set_params_to_eih_camera() {
     RCLCPP_INFO(this->get_logger(),
       "shutter_time: %d\n"
       "gain: %d\n"
@@ -137,7 +138,6 @@ class EIHClientPublisher : public rclcpp::Node {
         img_msg->header.frame_id = frame_id_;
         image_pub_->publish(*img_msg);
         RCLCPP_INFO(this->get_logger(), "Received image data");
-        // RCLCPP_INFO(this->get_logger(), "ros info :test tag ");
 
         publish_camera_info(img_msg->header);
       }
