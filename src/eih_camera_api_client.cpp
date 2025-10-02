@@ -7,8 +7,7 @@ namespace TmEIHCamera {
 
 EIHCameraApiClient::EIHCameraApiClient(const std::string &server_address) {
   grpc::ChannelArguments channel_args;
-  channel_args.SetMaxReceiveMessageSize(
-      -1);  // Set to unlimited size, or you can set a specific size in bytes.
+  channel_args.SetMaxReceiveMessageSize(-1);
   auto channel = grpc::CreateCustomChannel(
       server_address, grpc::InsecureChannelCredentials(), channel_args);
   stub_ = EIHCameraApi::NewStub(channel);

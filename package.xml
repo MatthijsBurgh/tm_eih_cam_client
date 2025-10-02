@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>eih_client</name>
+  <name>tm_eih_cam_client</name>
   <version>0.1.0</version>
-  <description>gRPC ROS2 client</description>
+  <description>TM EIH camera gRPC client for ROS2 - uses the EIH gRPC API and proto definitions to provide image publishing and camera settings.</description>
   <maintainer email="steven.zheng@tm-robot.com">steven.zheng</maintainer>
   <license>BSD-3-Clause</license>
 

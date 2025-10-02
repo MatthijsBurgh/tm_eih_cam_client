@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(eih_client)
+project(tm_eih_cam_client)
 
 include(common.cmake)
 
