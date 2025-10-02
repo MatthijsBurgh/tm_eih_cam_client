@@ -146,13 +146,13 @@ struct IsCameraConnectedResponse {
 };
 
 struct SetCapturingSettingsRequest {
-  int shutter_time;
-  int gain;
-  int wb_redratio;
-  int wb_greenratio;
-  int wb_blueratio;
-  int focus;
-  std::string image_size;  // 1M = 1280*960,  5M = 2592*1944
+  int shutter_time = -1;
+  int gain = -1;
+  int wb_redratio = -1;
+  int wb_greenratio = -1;
+  int wb_blueratio = -1;
+  int focus = -1;
+  std::string image_size = "";  // 1M = 1280*960,  5M = 2592*1944
 };
 
 struct GetShutterTimeResponse {

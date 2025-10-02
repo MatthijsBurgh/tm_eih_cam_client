@@ -31,11 +31,11 @@ class EIHClientPublisher : public rclcpp::Node {
     image_encoding_ = this->get_parameter("image_encoding").as_string();
     client_ = std::make_unique<EIHCameraApiClient>(camera_addr_);
 
-    // init params
-    set_camera_params();
+    // init eih params
+    get_eih_params();
 
     // register parameter change callback (will be invoked on ros2 param set)
-    param_cb_handle_ = this->add_on_set_parameters_callback(
+    params_cb_handle_ = this->add_on_set_parameters_callback(
         std::bind(&EIHClientPublisher::on_params_change, this, std::placeholders::_1));
     
     image_pub_ = this->create_publisher<sensor_msgs::msg::Image>(
@@ -49,8 +49,7 @@ class EIHClientPublisher : public rclcpp::Node {
   }
 
  private:
-  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr param_cb_handle_;
-
+  rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr params_cb_handle_;
   std::string camera_addr_;
   std::string frame_id_;
   std::string image_encoding_;
@@ -61,51 +60,66 @@ class EIHClientPublisher : public rclcpp::Node {
 
   std::unique_ptr<EIHCameraApiClient> client_;
   tm_eih_config::Image eih_img_;
+  tm_eih_config::SetCapturingSettingsRequest req_;
   GrpcResult grpc_result_;
 
   rcl_interfaces::msg::SetParametersResult on_params_change(const std::vector<rclcpp::Parameter> &params) {
     rcl_interfaces::msg::SetParametersResult result;
     result.successful = true;
     // re-apply relevant camera params when any parameter changes
+    assign_params(params);
     set_camera_params();
     return result;
   }
 
-  void set_camera_params() {
-    int shutter_time = this->get_parameter("shutter_time").as_int();
-    int gain = this->get_parameter("gain").as_int();
-    int wb_r = this->get_parameter("wb_redratio").as_int();
-    int wb_g = this->get_parameter("wb_greenratio").as_int();
-    int wb_b = this->get_parameter("wb_blueratio").as_int();
-    int focus = this->get_parameter("focus").as_int();
-    std::string image_size = this->get_parameter("image_size").as_string();
+  void get_eih_params() {
+    auto paras_client = std::make_shared<rclcpp::SyncParametersClient>(this);
+    auto params = paras_client->get_parameters(
+      {
+        "shutter_time", "gain", "wb_redratio", "wb_greenratio", "wb_blueratio", "focus", "image_size"
+      }
+    );
+    assign_params(params);
+  }
 
-    std::cout << "shutter_time: " << shutter_time << std::endl;
-    std::cout << "gain: " << gain << std::endl;
-    std::cout << "wb_redratio: " << wb_r << std::endl;
-    std::cout << "wb_greenratio: " << wb_g << std::endl;
-    std::cout << "wb_b: " << wb_b << std::endl;
-    std::cout << "focus: " << focus << std::endl;
-    std::cout << "image_size: " << image_size << std::endl;
-
-    bool any_setting = (shutter_time > 0) || (gain >= 0) || (wb_r >= 0) ||
-                     (wb_g >= 0) || (wb_b >= 0) || (focus >= 0) ||
-                     (!image_size.empty());
-    std::cout << "any_setting: " << any_setting << std::endl;
-
-    if (any_setting) {
-      tm_eih_config::SetCapturingSettingsRequest req;
-      if (shutter_time > 0) req.shutter_time = shutter_time;
-      if (gain >= 0) req.gain = gain;
-      if (wb_r >= 0) req.wb_redratio = wb_r;
-      if (wb_g >= 0) req.wb_greenratio = wb_g;
-      if (wb_b >= 0) req.wb_blueratio = wb_b;
-      if (focus >= 0) req.focus = focus;
-      if (!image_size.empty()) req.image_size = image_size;
-      client_->setCapturingSettings(grpc_result_, req);
-      RCLCPP_INFO(this->get_logger(), "Applied capturing settings via setCapturingSettings");
+  void assign_params(const std::vector<rclcpp::Parameter> & params) {
+    for (const auto &p : params) {
+      const auto &name = p.get_name();
+      if (name == "shutter_time") req_.shutter_time = p.as_int();
+      else if (name == "gain") req_.gain = p.as_int();
+      else if (name == "wb_redratio") req_.wb_redratio = p.as_int();
+      else if (name == "wb_greenratio") req_.wb_greenratio = p.as_int();
+      else if (name == "wb_blueratio") req_.wb_blueratio = p.as_int();
+      else if (name == "focus") req_.focus = p.as_int();
+      else if (name == "image_size") req_.image_size = p.as_string();
+      else {
+        RCLCPP_WARN(this->get_logger(), "Invalid parameter name: %s", name.c_str());
+      }
     }
   }
+
+  void set_camera_params() {
+    RCLCPP_INFO(this->get_logger(),
+      "shutter_time: %d\n"
+      "gain: %d\n"
+      "wb_r: %d\n"
+      "wb_g: %d\n"
+      "wb_b: %d\n"
+      "focus: %d\n"
+      "image_size: %s",
+      req_.shutter_time, req_.gain, req_.wb_redratio, req_.wb_greenratio, req_.wb_blueratio, req_.focus, req_.image_size.c_str());
+
+    bool any_setting = (req_.shutter_time >= 0) || (req_.gain >= 0) || (req_.wb_redratio >= 0) ||
+                     (req_.wb_greenratio >= 0) || (req_.wb_blueratio >= 0) || (req_.focus >= 0) ||
+                     (!req_.image_size.empty());
+    RCLCPP_DEBUG(this->get_logger(), "any_setting: %d", any_setting);
+
+    if (any_setting) {
+      client_->setCapturingSettings(grpc_result_, req_);
+      RCLCPP_INFO(this->get_logger(), "Applied capturing settings via EIH api setCapturingSettings");
+    }
+  }
+
 
   // Image
   void publish_image() {
