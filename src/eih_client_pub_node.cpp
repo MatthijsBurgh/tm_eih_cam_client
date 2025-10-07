@@ -40,9 +40,12 @@ class EIHClientPublisher : public rclcpp::Node {
         std::bind(&EIHClientPublisher::on_params_change, this, std::placeholders::_1));
     
     image_pub_ = this->create_publisher<sensor_msgs::msg::Image>(
-        "/eih_camera/image_raw", rclcpp::SensorDataQoS());
+        "/eih_camera/image_raw", rclcpp::QoS(100));
+    compressed_pub_ = this->create_publisher<sensor_msgs::msg::CompressedImage>(
+        "/eih_camera/image_raw/compressed", rclcpp::QoS(100));
+
     camera_info_pub_ = this->create_publisher<sensor_msgs::msg::CameraInfo>(
-        "/eih_camera/camera_info", rclcpp::SensorDataQoS());
+        "/eih_camera/camera_info", rclcpp::QoS(100));
 
     timer_ = this->create_wall_timer(
         std::chrono::milliseconds(33),
@@ -56,6 +59,7 @@ class EIHClientPublisher : public rclcpp::Node {
   std::string image_encoding_;
 
   rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_pub_;
+  rclcpp::Publisher<sensor_msgs::msg::CompressedImage>::SharedPtr compressed_pub_;
   rclcpp::Publisher<sensor_msgs::msg::CameraInfo>::SharedPtr camera_info_pub_;
   rclcpp::TimerBase::SharedPtr timer_;
 
@@ -124,11 +128,31 @@ class EIHClientPublisher : public rclcpp::Node {
 
   // Image
   void publish_image() {
+
+    auto t0 = std::chrono::steady_clock::now();
     client_->getImageData(grpc_result_, eih_img_.data);
+    auto t1 = std::chrono::steady_clock::now();
+
     auto img_raw = eih_img_.data.encode_string;
 
     if (!img_raw.empty()) {
+
+      sensor_msgs::msg::CompressedImage comp_msg;
+      comp_msg.header.stamp = this->now();
+      comp_msg.header.frame_id = frame_id_;
+      comp_msg.format = "png";
+      comp_msg.data.assign(img_raw.begin(), img_raw.end());
+      compressed_pub_->publish(comp_msg);
+
+      auto t2 = std::chrono::steady_clock::now();
       cv::Mat img = cv::imdecode(cv::Mat(img_raw), cv::IMREAD_COLOR);
+      auto t3 = std::chrono::steady_clock::now();
+
+      RCLCPP_DEBUG(this->get_logger(),
+        "Cost time: getImageData=%.2f ms, decode Image=%.2f ms",
+        std::chrono::duration_cast<std::chrono::milliseconds>(t1-t0).count() * 1.0,
+        std::chrono::duration_cast<std::chrono::milliseconds>(t3-t2).count() * 1.0
+      );
 
       if (!img.empty()) {
         auto img_msg =
@@ -137,10 +161,11 @@ class EIHClientPublisher : public rclcpp::Node {
         img_msg->header.stamp = this->now();
         img_msg->header.frame_id = frame_id_;
         image_pub_->publish(*img_msg);
-        RCLCPP_INFO(this->get_logger(), "Received image data");
+        RCLCPP_DEBUG(this->get_logger(), "Received image data");
 
         publish_camera_info(img_msg->header);
       }
+      
     } else {
       RCLCPP_WARN(this->get_logger(), "Received empty image data!");
     }
@@ -151,11 +176,17 @@ class EIHClientPublisher : public rclcpp::Node {
     std::vector<tm_eih_config::Intrinsics> intrinsics_vec;
     if (!client_->getIntrinsics(grpc_result_, intrinsics_vec)) return;
     tm_eih_config::CaptureSettingValue focus;
+
+    auto start = this->now();
     client_->getFocus(grpc_result_, focus);
     client_->getImageConfiguration(grpc_result_, eih_img_.config);
-    std::cout << "focus: " << focus.current_value << std::endl;
-    std::cout << "image width: " << eih_img_.config.image_width << std::endl;
-    std::cout << "image height: " << eih_img_.config.image_height << std::endl;
+    auto end = this->now();
+    auto duration_ms = (end - start).seconds() * 1000.0;
+    RCLCPP_DEBUG(this->get_logger(), "getFocus & getImageConfiguration cost: %.2f ms", duration_ms);
+    
+    RCLCPP_DEBUG(this->get_logger(), "focus %d", focus.current_value);
+    RCLCPP_DEBUG(this->get_logger(), "image width: %d", eih_img_.config.image_width);
+    RCLCPP_DEBUG(this->get_logger(), "image height: %d", eih_img_.config.image_height);
 
     sensor_msgs::msg::CameraInfo cam_info;
     int mapped_focus = focus.current_value;

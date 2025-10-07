@@ -29,5 +29,6 @@ def generate_launch_description():
                 {'robot_ip': LaunchConfiguration('robot_ip')},
                 [LaunchConfiguration('params_file')]
             ],
+            arguments=['--ros-args', '--log-level', 'debug']
         ),
     ])

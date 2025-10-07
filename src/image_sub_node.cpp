@@ -8,7 +8,7 @@ class ImageSubscriberNode : public rclcpp::Node {
  public:
   ImageSubscriberNode() : Node("image_subscriber_node") {
     image_subscription_ = this->create_subscription<sensor_msgs::msg::Image>(
-        "/eih_camera/image_raw", rclcpp::SensorDataQoS(),
+        "/eih_camera/image_raw", rclcpp::QoS(100),
         std::bind(&ImageSubscriberNode::image_callback, this,
                   std::placeholders::_1));
   }
