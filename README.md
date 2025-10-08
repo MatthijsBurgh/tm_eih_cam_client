@@ -51,7 +51,7 @@ Build the workspace (inside a container or on native host):
     ros2 launch tm_eih_cam_client eih_client_pub.launch.py robot_ip:=192.168.x.x
     ```
 
-   - You can set robot IP in eih_client_pub.launch.py file
+    You can set robot IP in eih_client_pub.launch.py file
 
    - show image
       ```bash
