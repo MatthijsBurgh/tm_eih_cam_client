@@ -7,7 +7,7 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     robot_ip_arg = DeclareLaunchArgument(
         'robot_ip',
-        default_value='172.25.181.18',  # your tm robot ip
+        default_value='198.168.10.20',  # your tm robot ip
         description='Server address for the robot EIH camera'
     )
     params_file_arg = DeclareLaunchArgument(
