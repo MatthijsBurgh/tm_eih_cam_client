@@ -22,7 +22,7 @@ For more details about the TM EIH camera API, you can refer to the document:
 ## Requirements
 
 - ROS 2 Humble
-- gRPC
+- [gRPC](https://github.com/grpc/grpc)
 - OpenCV
 
 A Dockerfile is provided as a reference for setting up the environment.
