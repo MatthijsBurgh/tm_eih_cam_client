@@ -54,7 +54,7 @@ A Dockerfile is provided as a reference for setting up the environment.
       source install/setup.bash
       ```
 
-### Option 2: Docker Build
+### Option 2: Docker Build (Recommended)
   
   1. Define your image name:
       ```bash
