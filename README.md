@@ -43,7 +43,7 @@ A Dockerfile is provided as a reference for setting up the environment.
 
 ### Option 1: Native Build (on Host)
 
-  1. Ensure ROS 2 Humble and dependencies are installed and sourced.
+  1. Ensure ROS 2 Humble, gRPC, and OpenCV are installed and sourced.
 
   2. Build the workspace:
       ```bash
