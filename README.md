@@ -1,4 +1,4 @@
-# tm_eih_cam_client
+# TM EIH Camera Client
 
 A ROS 2 package that bridges the TM Robot EIH camera gRPC API (TMflow ≥ 2.20) into ROS 2.
 It fetches images and camera parameters from the EIH camera, republishes them to ROS 2 topics, and allows runtime configuration via ROS 2 parameters.
@@ -16,6 +16,14 @@ For more details about the TM EIH camera API, you can refer to the document:
   - `/eih_camera/image_raw/compressed` (sensor_msgs/msg/CompressedImage)
   - `/eih_camera/camera_info` (sensor_msgs/msg/CameraInfo)
 - Exposes camera parameters via ROS 2 parameters so you can change camera settings at runtime.
+
+---
+
+## Enabling EIH Camera API Server
+
+![Enabling EIH Camera API Server](docs/images/enabling_eih_camera_api_server.png)
+
+![TMflow EIH Camera API Services](docs/images/tmflow_eih_camera_api_services.jpeg)
 
 ---
 
@@ -68,7 +76,7 @@ A Dockerfile is provided as a reference for setting up the environment.
       docker build -t $IMAGE_NAME .
       ```
 
-  3. Start an development container:
+  3. Start a development container:
       ```bash
       docker run -it --rm -v $(pwd):/workspaces/src -w /workspaces $IMAGE_NAME /bin/bash
       ```
@@ -87,7 +95,16 @@ A Dockerfile is provided as a reference for setting up the environment.
     ros2 launch tm_eih_cam_client eih_client_pub.launch.py robot_ip:=192.168.x.x
     ```
 
-    You can set robot IP in eih_client_pub.launch.py file
+    You can set robot IP in `eih_client_pub.launch.py` file
+
+  - **Configuration & Runtime Adjustment**
+
+    The `config` allows for parameter initialization, setting the EIH camera via the API.
+    
+    At runtime, you can use `ros2 param` to adjust camera parameters. For example, to adjust the focus:
+    ```bash
+    ros2 param set /eih_client_publisher focus 4
+    ```
 
    <!-- - show image
       ```bash
