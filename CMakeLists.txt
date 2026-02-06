@@ -2,121 +2,81 @@ cmake_minimum_required(VERSION 3.16)
 
 project(tm_eih_cam_client)
 
-include(common.cmake)
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+
+# Find Python3
+find_package(Python3 REQUIRED COMPONENTS Interpreter)
+
+# Generate Python protobuf files
+set(PROTO_DIR "${CMAKE_CURRENT_SOURCE_DIR}/proto")
+set(PROTO_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/tm_eih_cam_client")
+
+# Create output directory
+file(MAKE_DIRECTORY ${PROTO_OUTPUT_DIR})
 
 # Proto files
-get_filename_component(eihcam_api_proto "proto/EIHCameraAPI.proto" ABSOLUTE)
-get_filename_component(eihcam_api_proto_path "${eihcam_api_proto}" PATH)
-get_filename_component(eihcam_proto "proto/EIHCamera.proto" ABSOLUTE)
-get_filename_component(eihcam_proto_path "${eihcam_proto}" PATH)
+set(PROTO_FILES
+  "${PROTO_DIR}/EIHCamera.proto"
+  "${PROTO_DIR}/EIHCameraAPI.proto"
+)
 
-# Generated sources for EIHCameraAPI.proto
-set(eihcam_api_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/EIHCameraAPI.pb.cc")
-set(eihcam_api_proto_hdrs "${CMAKE_CURRENT_BINARY_DIR}/EIHCameraAPI.pb.h")
-set(eihcam_api_grpc_srcs "${CMAKE_CURRENT_BINARY_DIR}/EIHCameraAPI.grpc.pb.cc")
-set(eihcam_api_grpc_hdrs "${CMAKE_CURRENT_BINARY_DIR}/EIHCameraAPI.grpc.pb.h")
+# Custom command to generate Python protobuf files
 add_custom_command(
-      OUTPUT "${eihcam_api_proto_srcs}" "${eihcam_api_proto_hdrs}" "${eihcam_api_grpc_srcs}" "${eihcam_api_grpc_hdrs}"
-      COMMAND ${_PROTOBUF_PROTOC}
-      ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
-        --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
-        -I "${eihcam_api_proto_path}"
-        --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
-        "${eihcam_api_proto}"
-      DEPENDS "${eihcam_api_proto}")
+  OUTPUT
+    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.py"
+    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.pyi"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.pyi"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py"
+  COMMAND ${Python3_EXECUTABLE} -m grpc_tools.protoc
+    --proto_path=${PROTO_DIR}
+    --python_out=${PROTO_OUTPUT_DIR}
+    --grpc_python_out=${PROTO_OUTPUT_DIR}
+    --pyi_out=${PROTO_OUTPUT_DIR}
+    ${PROTO_FILES}
+  DEPENDS ${PROTO_FILES}
+  COMMENT "Generating Python protobuf files"
+)
 
-# Generated sources for EIHCamera.proto
-set(eihcam_proto_srcs "${CMAKE_CURRENT_BINARY_DIR}/EIHCamera.pb.cc")
-set(eihcam_proto_hdrs "${CMAKE_CURRENT_BINARY_DIR}/EIHCamera.pb.h")
-set(eihcam_grpc_srcs "${CMAKE_CURRENT_BINARY_DIR}/EIHCamera.grpc.pb.cc")
-set(eihcam_grpc_hdrs "${CMAKE_CURRENT_BINARY_DIR}/EIHCamera.grpc.pb.h")
-add_custom_command(
-      OUTPUT "${eihcam_proto_srcs}" "${eihcam_proto_hdrs}" "${eihcam_grpc_srcs}" "${eihcam_grpc_hdrs}"
-      COMMAND ${_PROTOBUF_PROTOC}
-      ARGS --grpc_out "${CMAKE_CURRENT_BINARY_DIR}"
-        --cpp_out "${CMAKE_CURRENT_BINARY_DIR}"
-        -I "${eihcam_proto_path}"
-        --plugin=protoc-gen-grpc="${_GRPC_CPP_PLUGIN_EXECUTABLE}"
-        "${eihcam_proto}"
-      DEPENDS "${eihcam_proto}")
+# Custom target to ensure proto files are generated
+add_custom_target(generate_proto_py ALL
+  DEPENDS
+    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.py"
+    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.pyi"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.pyi"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py"
+)
 
-# Include generated *.pb.h files
-include_directories("${CMAKE_CURRENT_BINARY_DIR}")
+# Install Python package
+ament_python_install_package(${PROJECT_NAME}
+  PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}
+)
 
-find_package(rclcpp REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(cv_bridge REQUIRED)
-find_package(OpenCV REQUIRED)
+# Install generated proto files to the package
+install(
+  FILES
+    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.py"
+    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.pyi"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.pyi"
+    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py"
+  DESTINATION "${PYTHON_INSTALL_DIR}/${PROJECT_NAME}"
+)
 
-# eihcam_grpc_proto
-add_library(eihcam_grpc_proto
-  ${eihcam_api_grpc_srcs}
-  ${eihcam_api_grpc_hdrs}
-  ${eihcam_api_proto_srcs}
-  ${eihcam_api_proto_hdrs}
-  ${eihcam_grpc_srcs}
-  ${eihcam_grpc_hdrs}
-  ${eihcam_proto_srcs}
-  ${eihcam_proto_hdrs})
+# Install Python scripts
+install(PROGRAMS
+  ${PROJECT_NAME}/eih_client_pub_node.py
+  ${PROJECT_NAME}/image_sub_node.py
+  ${PROJECT_NAME}/eih_client_test_get.py
+  ${PROJECT_NAME}/eih_client_test_set.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
-target_link_libraries(eihcam_grpc_proto
-  ${_REFLECTION}
-  ${_GRPC_GRPCPP}
-  ${_PROTOBUF_LIBPROTOBUF})
-  
-# eihcam_api_client
-add_library(eihcam_api_client
-  src/eih_camera_api_client.cpp
-  )
-
-target_link_libraries(eihcam_api_client
-  eihcam_grpc_proto
-  )
-
-target_include_directories(eihcam_api_client PUBLIC include)
-
-# eih client node
-add_executable(eih_client_pub
-  src/eih_client_pub_node.cpp
-  )
-
-target_link_libraries(eih_client_pub
-  eihcam_api_client)
-
-ament_target_dependencies(eih_client_pub rclcpp sensor_msgs cv_bridge OpenCV)
-
-# image sub node
-add_executable(image_sub 
-  src/image_sub_node.cpp
-  )
-
-ament_target_dependencies(image_sub rclcpp sensor_msgs cv_bridge OpenCV)
-
-# eih client test get
-add_executable(eih_client_test_get
-  src/eih_client_test_get.cpp
-  )
-target_link_libraries(eih_client_test_get
-  eihcam_api_client)
-
-ament_target_dependencies(eih_client_test_get OpenCV)
-
-# eih client test set
-add_executable(eih_client_test_set
-  src/eih_client_test_set.cpp
-  )
-target_link_libraries(eih_client_test_set
-  eihcam_api_client
-  )
-
-install(TARGETS 
-  eih_client_pub
-  image_sub
-  eih_client_test_get
-  eih_client_test_set
-  DESTINATION lib/${PROJECT_NAME})
-
-install(DIRECTORY 
+# Install launch and config files
+install(DIRECTORY
   launch
   config
   DESTINATION share/${PROJECT_NAME}
