@@ -13,14 +13,13 @@
   <depend>sensor_msgs</depend>
   <depend>cv_bridge</depend>
 
-  <exec_depend>python3-grpcio</exec_depend>
-  <exec_depend>python3-grpcio-tools</exec_depend>
+  <exec_depend>python3-grpcio-pip</exec_depend>
+  <exec_depend>python3-grpcio-tools-pip</exec_depend>
   <exec_depend>python3-protobuf</exec_depend>
   <exec_depend>python3-opencv</exec_depend>
   <exec_depend>python3-numpy</exec_depend>
 
   <export>
-    <build_type>ament_cmake_python</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
-

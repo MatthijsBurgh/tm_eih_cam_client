@@ -2,11 +2,9 @@
 
 This module provides a Python gRPC client for the TM Robot EIH camera API.
 """
-
 import grpc
 import logging
 from google.protobuf import empty_pb2
-from typing import List, Optional, Tuple
 from enum import IntEnum
 
 # Import generated protobuf modules
@@ -36,13 +34,16 @@ class GrpcResult:
         self.status = StatusCode.FAIL
         self.error_message = ""
 
+    def __repr__(self) -> str:
+        return f"GrpcResult(status={self.status}, error_message='{self.error_message}')"
+
 
 class EIHCameraApiClient:
     """gRPC client for EIH Camera API"""
-    
+
     def __init__(self, server_address: str):
         """Initialize the gRPC client
-        
+
         Args:
             server_address: Server address in format "host:port"
         """
@@ -53,10 +54,10 @@ class EIHCameraApiClient:
         ]
         self.channel = grpc.insecure_channel(server_address, options=options)
         self.stub = EIHCameraAPI_pb2_grpc.EIHCameraApiStub(self.channel)
-    
-    def is_camera_connected(self) -> Tuple[GrpcResult, Optional[dict]]:
+
+    def is_camera_connected(self) -> tuple[GrpcResult, dict | None]:
         """Check if camera is connected
-        
+
         Returns:
             Tuple of (GrpcResult, camera connection info dict or None)
         """
@@ -64,10 +65,10 @@ class EIHCameraApiClient:
         try:
             request = empty_pb2.Empty()
             response = self.stub.isCameraConnected(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            
+
             return result, {
                 'is_camera_connected': response.isCameraConnected,
                 'connection_message': response.connection_message
@@ -76,10 +77,10 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
-    def get_intrinsics(self) -> Tuple[GrpcResult, Optional[List[dict]]]:
+
+    def get_intrinsics(self) -> tuple[GrpcResult, list[dict] | None]:
         """Get camera intrinsics for different focus and resolution settings
-        
+
         Returns:
             Tuple of (GrpcResult, list of intrinsics dicts or None)
         """
@@ -87,7 +88,7 @@ class EIHCameraApiClient:
         try:
             request = empty_pb2.Empty()
             response = self.stub.getIntrinsics(request)
-            
+
             intrinsics_list = []
             for intrinsics in response.cam_intrinsics:
                 intrinsics_dict = {
@@ -114,7 +115,7 @@ class EIHCameraApiClient:
                     }
                 }
                 intrinsics_list.append(intrinsics_dict)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             return result, intrinsics_list
@@ -122,10 +123,10 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
-    def get_hand_eye_parameters(self) -> Tuple[GrpcResult, Optional[dict]]:
+
+    def get_hand_eye_parameters(self) -> tuple[GrpcResult, dict | None]:
         """Get hand-eye calibration parameters
-        
+
         Returns:
             Tuple of (GrpcResult, hand-eye parameters dict or None)
         """
@@ -133,10 +134,10 @@ class EIHCameraApiClient:
         try:
             request = empty_pb2.Empty()
             response = self.stub.getHandEyeParameters(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            
+
             return result, {
                 'handeye_x': response.HandEyeArray.handeye_x,
                 'handeye_y': response.HandEyeArray.handeye_y,
@@ -149,10 +150,10 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
-    def get_image_data(self) -> Tuple[GrpcResult, Optional[bytes]]:
+
+    def get_image_data(self) -> tuple[GrpcResult, bytes | None]:
         """Get encoded image data
-        
+
         Returns:
             Tuple of (GrpcResult, image bytes or None)
         """
@@ -160,7 +161,7 @@ class EIHCameraApiClient:
         try:
             request = empty_pb2.Empty()
             response = self.stub.getImageData(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             return result, response.EncodeString
@@ -168,10 +169,10 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
-    def get_image_configuration(self) -> Tuple[GrpcResult, Optional[dict]]:
+
+    def get_image_configuration(self) -> tuple[GrpcResult, dict | None]:
         """Get image configuration
-        
+
         Returns:
             Tuple of (GrpcResult, image config dict or None)
         """
@@ -179,10 +180,10 @@ class EIHCameraApiClient:
         try:
             request = empty_pb2.Empty()
             response = self.stub.getImageConfiguration(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            
+
             return result, {
                 'image_type': response.ImageType,
                 'image_size': response.ImageSize,
@@ -194,10 +195,10 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
-    def get_capturing_settings(self) -> Tuple[GrpcResult, Optional[dict]]:
+
+    def get_capturing_settings(self) -> tuple[GrpcResult, dict | None]:
         """Get all capturing settings
-        
+
         Returns:
             Tuple of (GrpcResult, capturing settings dict or None)
         """
@@ -205,10 +206,10 @@ class EIHCameraApiClient:
         try:
             request = empty_pb2.Empty()
             response = self.stub.getCapturingSettings(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            
+
             return result, {
                 'shutter_time': {
                     'current_value': response.ShutterTime.CurrentValue,
@@ -248,13 +249,13 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
+
     def set_capturing_settings(self, shutter_time: int = -1, gain: int = -1,
                               wb_redratio: int = -1, wb_greenratio: int = -1,
                               wb_blueratio: int = -1, focus: int = -1,
                               image_size: str = "") -> GrpcResult:
         """Set capturing settings
-        
+
         Args:
             shutter_time: Shutter time (134~66371)
             gain: Gain (0~100)
@@ -263,7 +264,7 @@ class EIHCameraApiClient:
             wb_blueratio: White balance blue ratio (34~94)
             focus: Focus (0~8)
             image_size: Image size (1M or 5M)
-        
+
         Returns:
             GrpcResult
         """
@@ -279,7 +280,7 @@ class EIHCameraApiClient:
                 ImageSize=image_size
             )
             self.stub.setCapturingSettings(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             logger.info("Capturing settings updated successfully")
@@ -289,17 +290,17 @@ class EIHCameraApiClient:
             result.error_message = str(e)
             logger.error(f"RPC failed: {e}")
             return result
-    
-    def get_shutter_time(self) -> Tuple[GrpcResult, Optional[dict]]:
+
+    def get_shutter_time(self) -> tuple[GrpcResult, dict | None]:
         """Get shutter time setting"""
         result = GrpcResult()
         try:
             request = empty_pb2.Empty()
             response = self.stub.getShutterTime(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            
+
             return result, {
                 'current_value': response.shuttertime.CurrentValue,
                 'min_value': response.shuttertime.MinValue,
@@ -309,14 +310,14 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
+
     def set_shutter_time(self, shutter_time: int) -> GrpcResult:
         """Set shutter time"""
         result = GrpcResult()
         try:
             request = EIHCameraAPI_pb2.setShutterTimeRequest(shuttertime=shutter_time)
             self.stub.setShutterTime(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             logger.info("Shutter time set successfully")
@@ -326,17 +327,17 @@ class EIHCameraApiClient:
             result.error_message = str(e)
             logger.error(f"RPC failed: {e}")
             return result
-    
-    def get_gain(self) -> Tuple[GrpcResult, Optional[dict]]:
+
+    def get_gain(self) -> tuple[GrpcResult, dict | None]:
         """Get gain setting"""
         result = GrpcResult()
         try:
             request = empty_pb2.Empty()
             response = self.stub.getGain(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            
+
             return result, {
                 'current_value': response.gain.CurrentValue,
                 'min_value': response.gain.MinValue,
@@ -346,14 +347,14 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
+
     def set_gain(self, gain: int) -> GrpcResult:
         """Set gain"""
         result = GrpcResult()
         try:
             request = EIHCameraAPI_pb2.setGainRequest(gain=gain)
             self.stub.setGain(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             logger.info("Gain set successfully")
@@ -363,17 +364,17 @@ class EIHCameraApiClient:
             result.error_message = str(e)
             logger.error(f"RPC failed: {e}")
             return result
-    
-    def get_white_balance(self) -> Tuple[GrpcResult, Optional[dict]]:
+
+    def get_white_balance(self) -> tuple[GrpcResult, dict | None]:
         """Get white balance settings"""
         result = GrpcResult()
         try:
             request = empty_pb2.Empty()
             response = self.stub.getWhiteBalance(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            
+
             return result, {
                 'red_ratio': {
                     'current_value': response.whitebalance.red_ratio.CurrentValue,
@@ -395,8 +396,8 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
-    def set_white_balance(self, wb_redratio: int, wb_greenratio: int, 
+
+    def set_white_balance(self, wb_redratio: int, wb_greenratio: int,
                          wb_blueratio: int) -> GrpcResult:
         """Set white balance"""
         result = GrpcResult()
@@ -407,7 +408,7 @@ class EIHCameraApiClient:
                 wb_blueratio=wb_blueratio
             )
             self.stub.setWhiteBalance(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             logger.info("White Balance set successfully")
@@ -417,17 +418,17 @@ class EIHCameraApiClient:
             result.error_message = str(e)
             logger.error(f"RPC failed: {e}")
             return result
-    
-    def get_focus(self) -> Tuple[GrpcResult, Optional[dict]]:
+
+    def get_focus(self) -> tuple[GrpcResult, dict | None]:
         """Get focus setting"""
         result = GrpcResult()
         try:
             request = empty_pb2.Empty()
             response = self.stub.getFocus(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            
+
             return result, {
                 'current_value': response.focus.CurrentValue,
                 'min_value': response.focus.MinValue,
@@ -437,14 +438,14 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
+
     def set_focus(self, focus: int) -> GrpcResult:
         """Set focus"""
         result = GrpcResult()
         try:
             request = EIHCameraAPI_pb2.setFocusRequest(focus=focus)
             self.stub.setFocus(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             logger.info("Focus set successfully")
@@ -454,14 +455,14 @@ class EIHCameraApiClient:
             result.error_message = str(e)
             logger.error(f"RPC failed: {e}")
             return result
-    
-    def get_image_size(self) -> Tuple[GrpcResult, Optional[str]]:
+
+    def get_image_size(self) -> tuple[GrpcResult, str | None]:
         """Get image size setting"""
         result = GrpcResult()
         try:
             request = empty_pb2.Empty()
             response = self.stub.getImageSize(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             return result, response.imagesize
@@ -469,14 +470,14 @@ class EIHCameraApiClient:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
             return result, None
-    
+
     def set_image_size(self, image_size: str) -> GrpcResult:
         """Set image size"""
         result = GrpcResult()
         try:
             request = EIHCameraAPI_pb2.setImageSizeRequest(imagesize=image_size)
             self.stub.setImageSize(request)
-            
+
             result.status = StatusCode.SUCCESS
             result.error_message = ""
             logger.info("Image Size set successfully")
@@ -486,8 +487,14 @@ class EIHCameraApiClient:
             result.error_message = str(e)
             logger.error(f"RPC failed: {e}")
             return result
-    
+
+    def __repr__(self):
+        server = None
+        if hasattr(self, "channel") and self.channel is not None:
+            server = self.channel._channel.target()
+        return f"EIHCameraApiClient(server_address='{server}')"
+
     def __del__(self):
         """Clean up gRPC channel"""
-        if hasattr(self, 'channel'):
+        if hasattr(self, "channel") and self.channel is not None:
             self.channel.close()

@@ -18,12 +18,12 @@ This document summarizes the conversion of the `tm_eih_cam_client` package from 
 
 ### Technology Stack
 
-| Component | Version | Notes |
-|-----------|---------|-------|
-| gRPC | 1.60+ (tested with 1.78.0) | Latest stable version |
-| Protobuf | 4.21+ (tested with 6.33.5) | Latest compatible with gRPC |
-| Python | 3.8+ | ROS 2 Humble requirement |
-| ROS 2 | Humble+ | Target platform |
+| Component | Version                    | Notes                       |
+|-----------|----------------------------|-----------------------------|
+| gRPC      | 1.60+ (tested with 1.78.0) | Latest stable version       |
+| Protobuf  | 4.21+ (tested with 6.33.5) | Latest compatible with gRPC |
+| Python    | 3.8+                       | ROS 2 Humble requirement    |
+| ROS 2     | Humble+                    | Target platform             |
 
 ### Architecture Changes
 
@@ -55,30 +55,30 @@ ROS 2 Python nodes
 
 ### Core Implementation
 
-| C++ File | Python File | Notes |
-|----------|-------------|-------|
-| `src/eih_camera_api_client.cpp` | `tm_eih_cam_client/eih_camera_api_client.py` | Complete rewrite, same API |
-| `src/eih_client_pub_node.cpp` | `tm_eih_cam_client/eih_client_pub_node.py` | ROS 2 node, same functionality |
-| `src/image_sub_node.cpp` | `tm_eih_cam_client/image_sub_node.py` | Simplified in Python |
-| `src/eih_client_test_get.cpp` | `tm_eih_cam_client/eih_client_test_get.py` | Test script |
-| `src/eih_client_test_set.cpp` | `tm_eih_cam_client/eih_client_test_set.py` | Test script |
-| `include/eih_camera_api_client.h` | (integrated into .py) | No separate headers needed |
-| `include/eih_config.h` | (not needed) | Using protobuf structures directly |
+| C++ File                          | Python File                                  | Notes                              |
+|-----------------------------------|----------------------------------------------|------------------------------------|
+| `src/eih_camera_api_client.cpp`   | `tm_eih_cam_client/eih_camera_api_client.py` | Complete rewrite, same API         |
+| `src/eih_client_pub_node.cpp`     | `tm_eih_cam_client/eih_client_pub_node.py`   | ROS 2 node, same functionality     |
+| `src/image_sub_node.cpp`          | `tm_eih_cam_client/image_sub_node.py`        | Simplified in Python               |
+| `src/eih_client_test_get.cpp`     | `tm_eih_cam_client/eih_client_test_get.py`   | Test script                        |
+| `src/eih_client_test_set.cpp`     | `tm_eih_cam_client/eih_client_test_set.py`   | Test script                        |
+| `include/eih_camera_api_client.h` | (integrated into .py)                        | No separate headers needed         |
+| `include/eih_config.h`            | (not needed)                                 | Using protobuf structures directly |
 
 ### Build System
 
-| Old | New | Notes |
-|-----|-----|-------|
-| `CMakeLists.txt` (C++ focused) | `CMakeLists.txt` (Python focused) | Completely rewritten |
-| `common.cmake` | (removed) | Functionality integrated into main CMakeLists.txt |
-| (none) | `setup.py` | Python package setup |
-| (none) | `requirements.txt` | Python dependencies |
+| Old                            | New                               | Notes                                             |
+|--------------------------------|-----------------------------------|---------------------------------------------------|
+| `CMakeLists.txt` (C++ focused) | `CMakeLists.txt` (Python focused) | Completely rewritten                              |
+| `common.cmake`                 | (removed)                         | Functionality integrated into main CMakeLists.txt |
+| (none)                         | `setup.py`                        | Python package setup                              |
+| (none)                         | `requirements.txt`                | Python dependencies                               |
 
 ### Proto Files
 
-| File | Status |
-|------|--------|
-| `proto/EIHCamera.proto` | **UNCHANGED** (original structure preserved) |
+| File                       | Status                                       |
+|----------------------------|----------------------------------------------|
+| `proto/EIHCamera.proto`    | **UNCHANGED** (original structure preserved) |
 | `proto/EIHCameraAPI.proto` | **UNCHANGED** (original structure preserved) |
 
 ## Key Technical Decisions
@@ -88,6 +88,7 @@ ROS 2 Python nodes
 **Issue**: Generated Python protobuf files use absolute imports which break when installed as a package.
 
 **Solution**: Automated post-processing in CMakeLists.txt to convert:
+
 ```python
 # Generated code:
 import EIHCamera_pb2
@@ -99,6 +100,7 @@ from . import EIHCamera_pb2
 ### 2. gRPC Channel Configuration
 
 **C++**:
+
 ```cpp
 grpc::ChannelArguments channel_args;
 channel_args.SetMaxReceiveMessageSize(-1);
@@ -107,6 +109,7 @@ auto channel = grpc::CreateCustomChannel(address,
 ```
 
 **Python**:
+
 ```python
 options = [
     ('grpc.max_receive_message_length', -1),
@@ -118,11 +121,13 @@ channel = grpc.insecure_channel(address, options=options)
 ### 3. Error Handling
 
 **C++**: Return bool + output parameters
+
 ```cpp
 bool success = client.getImageData(result, data);
 ```
 
 **Python**: Return tuples with results
+
 ```python
 result, data = client.get_image_data()
 if result.status == StatusCode.SUCCESS:
@@ -167,11 +172,13 @@ The Python version is more concise while maintaining identical functionality.
 ## Migration Guide for Users
 
 ### Old Usage (C++)
+
 ```bash
 ros2 run tm_eih_cam_client eih_client_pub
 ```
 
 ### New Usage (Python)
+
 ```bash
 ros2 run tm_eih_cam_client eih_client_pub
 ```
