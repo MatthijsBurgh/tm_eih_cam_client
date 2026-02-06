@@ -41,7 +41,9 @@ add_custom_command(
     --pyi_out=${PROTO_OUTPUT_DIR}
     ${PROTO_FILES}
   # Fix imports to use relative imports
-  COMMAND ${Python3_EXECUTABLE} -c "import re; import sys; [__import__('pathlib').Path(f).write_text(re.sub(r'^import (EIHCamera(?:API)?_pb2)', r'from . import \\\\1', __import__('pathlib').Path(f).read_text(), flags=re.MULTILINE)) for f in ['${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py', '${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py']]"
+  COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/scripts/fix_proto_imports.py
+    ${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py
+    ${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py
   DEPENDS ${PROTO_FILES}
   COMMENT "Generating and fixing Python protobuf files"
 )

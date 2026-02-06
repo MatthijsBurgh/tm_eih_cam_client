@@ -4,6 +4,7 @@ This module provides a Python gRPC client for the TM Robot EIH camera API.
 """
 
 import grpc
+import logging
 from google.protobuf import empty_pb2
 from typing import List, Optional, Tuple
 from enum import IntEnum
@@ -17,6 +18,10 @@ except ImportError:
     import EIHCamera_pb2
     import EIHCameraAPI_pb2
     import EIHCameraAPI_pb2_grpc
+
+
+# Module logger
+logger = logging.getLogger(__name__)
 
 
 class StatusCode(IntEnum):
@@ -277,12 +282,12 @@ class EIHCameraApiClient:
             
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            print("Capturing settings updated successfully.")
+            logger.info("Capturing settings updated successfully")
             return result
         except grpc.RpcError as e:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
-            print(f"RPC failed: {e}")
+            logger.error(f"RPC failed: {e}")
             return result
     
     def get_shutter_time(self) -> Tuple[GrpcResult, Optional[dict]]:
@@ -314,12 +319,12 @@ class EIHCameraApiClient:
             
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            print("Shutter time set successfully.")
+            logger.info("Shutter time set successfully")
             return result
         except grpc.RpcError as e:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
-            print(f"RPC failed: {e}")
+            logger.error(f"RPC failed: {e}")
             return result
     
     def get_gain(self) -> Tuple[GrpcResult, Optional[dict]]:
@@ -351,12 +356,12 @@ class EIHCameraApiClient:
             
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            print("Gain set successfully.")
+            logger.info("Gain set successfully")
             return result
         except grpc.RpcError as e:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
-            print(f"RPC failed: {e}")
+            logger.error(f"RPC failed: {e}")
             return result
     
     def get_white_balance(self) -> Tuple[GrpcResult, Optional[dict]]:
@@ -405,12 +410,12 @@ class EIHCameraApiClient:
             
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            print("White Balance set successfully.")
+            logger.info("White Balance set successfully")
             return result
         except grpc.RpcError as e:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
-            print(f"RPC failed: {e}")
+            logger.error(f"RPC failed: {e}")
             return result
     
     def get_focus(self) -> Tuple[GrpcResult, Optional[dict]]:
@@ -442,12 +447,12 @@ class EIHCameraApiClient:
             
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            print("Focus set successfully.")
+            logger.info("Focus set successfully")
             return result
         except grpc.RpcError as e:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
-            print(f"RPC failed: {e}")
+            logger.error(f"RPC failed: {e}")
             return result
     
     def get_image_size(self) -> Tuple[GrpcResult, Optional[str]]:
@@ -474,12 +479,12 @@ class EIHCameraApiClient:
             
             result.status = StatusCode.SUCCESS
             result.error_message = ""
-            print("Image Size set successfully.")
+            logger.info("Image Size set successfully")
             return result
         except grpc.RpcError as e:
             result.status = StatusCode.FAIL
             result.error_message = str(e)
-            print(f"RPC failed: {e}")
+            logger.error(f"RPC failed: {e}")
             return result
     
     def __del__(self):

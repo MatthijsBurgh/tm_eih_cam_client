@@ -148,11 +148,11 @@ class EIHClientPublisher(Node):
             t1 = time.time()
             
             if result.status != 0 or image_data is None:
-                self.get_logger().warn(f"Failed to get image data: {result.error_message}")
+                self.get_logger().warning(f"Failed to get image data: {result.error_message}")
                 return
             
             if len(image_data) == 0:
-                self.get_logger().warn("Received empty image data!")
+                self.get_logger().warning("Received empty image data!")
                 return
             
             # Publish compressed image
@@ -188,7 +188,7 @@ class EIHClientPublisher(Node):
                 # Publish camera info
                 self._publish_camera_info(header)
             else:
-                self.get_logger().warn("Failed to decode image!")
+                self.get_logger().warning("Failed to decode image!")
                 
         except Exception as e:
             self.get_logger().error(f"Error in publish_image: {str(e)}")
