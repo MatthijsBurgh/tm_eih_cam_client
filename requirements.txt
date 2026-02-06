@@ -1,0 +1,6 @@
+# Python requirements for tm_eih_cam_client
+grpcio>=1.60.0
+grpcio-tools>=1.60.0
+protobuf>=4.21.0
+numpy>=1.20.0
+opencv-python>=4.5.0

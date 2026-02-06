@@ -1,2 +1,40 @@
 .vscode/
 .devcontainer/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# ROS
+install/
+log/
+build/
+
+# Generated protobuf files (will be regenerated during build)
+*_pb2.py
+*_pb2.pyi
+*_pb2_grpc.py
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
