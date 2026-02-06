@@ -22,32 +22,33 @@ set(PROTO_FILES
   "${PROTO_DIR}/EIHCameraAPI.proto"
 )
 
+# Generated Python files
+set(GENERATED_PY_FILES
+  "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.py"
+  "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.pyi"
+  "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py"
+  "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.pyi"
+  "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py"
+)
+
 # Custom command to generate Python protobuf files
 add_custom_command(
-  OUTPUT
-    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.py"
-    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.pyi"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.pyi"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py"
+  OUTPUT ${GENERATED_PY_FILES}
   COMMAND ${Python3_EXECUTABLE} -m grpc_tools.protoc
     --proto_path=${PROTO_DIR}
     --python_out=${PROTO_OUTPUT_DIR}
     --grpc_python_out=${PROTO_OUTPUT_DIR}
     --pyi_out=${PROTO_OUTPUT_DIR}
     ${PROTO_FILES}
+  # Fix imports to use relative imports
+  COMMAND ${Python3_EXECUTABLE} -c "import re; import sys; [__import__('pathlib').Path(f).write_text(re.sub(r'^import (EIHCamera(?:API)?_pb2)', r'from . import \\\\1', __import__('pathlib').Path(f).read_text(), flags=re.MULTILINE)) for f in ['${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py', '${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py']]"
   DEPENDS ${PROTO_FILES}
-  COMMENT "Generating Python protobuf files"
+  COMMENT "Generating and fixing Python protobuf files"
 )
 
 # Custom target to ensure proto files are generated
 add_custom_target(generate_proto_py ALL
-  DEPENDS
-    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.py"
-    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.pyi"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.pyi"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py"
+  DEPENDS ${GENERATED_PY_FILES}
 )
 
 # Install Python package
@@ -57,12 +58,7 @@ ament_python_install_package(${PROJECT_NAME}
 
 # Install generated proto files to the package
 install(
-  FILES
-    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.py"
-    "${PROTO_OUTPUT_DIR}/EIHCamera_pb2.pyi"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.py"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2.pyi"
-    "${PROTO_OUTPUT_DIR}/EIHCameraAPI_pb2_grpc.py"
+  FILES ${GENERATED_PY_FILES}
   DESTINATION "${PYTHON_INSTALL_DIR}/${PROJECT_NAME}"
 )
 
