@@ -1,7 +1,9 @@
 # TM EIH Camera Client
 
-A ROS 2 package that bridges the TM Robot EIH camera gRPC API (TMflow ≥ 2.20) into ROS 2.
+A ROS 2 **Python** package that bridges the TM Robot EIH camera gRPC API (TMflow ≥ 2.20) into ROS 2.
 It fetches images and camera parameters from the EIH camera, republishes them to ROS 2 topics, and allows runtime configuration via ROS 2 parameters.
+
+**Note**: This package has been converted to Python using the latest gRPC (1.60+) and Protobuf (4.21+) versions while maintaining the original protobuf structures.
 
 For more details about the TM EIH camera API, you can refer to the document:
 [EIH Camera API Function Manual](https://www.tm-robot.com/zh-hant/download-center/?q=eih&catid=3100&theme=table&limit=5#3100-5372-wpfd-2-20-eih-camera-api)
@@ -10,12 +12,14 @@ For more details about the TM EIH camera API, you can refer to the document:
 
 ## Features
 
-- Uses gRPC client to call the EIH camera API.
+- **Python implementation** using modern gRPC and Protobuf
+- Uses gRPC client to call the EIH camera API
 - Publishes:
   - `/eih_camera/image_raw` (sensor_msgs/msg/Image)
   - `/eih_camera/image_raw/compressed` (sensor_msgs/msg/CompressedImage)
   - `/eih_camera/camera_info` (sensor_msgs/msg/CameraInfo)
-- Exposes camera parameters via ROS 2 parameters so you can change camera settings at runtime.
+- Exposes camera parameters via ROS 2 parameters so you can change camera settings at runtime
+- Uses original TM Robot protobuf definitions
 
 ---
 
@@ -29,15 +33,30 @@ For more details about the TM EIH camera API, you can refer to the document:
 
 ## Requirements
 
-- ROS 2 Humble
-- [gRPC](https://github.com/grpc/grpc)
-- OpenCV
+- ROS 2 Humble (or newer)
+- Python 3.8+
+- Python packages:
+  - grpcio >= 1.60.0
+  - grpcio-tools >= 1.60.0
+  - protobuf >= 4.21.0
+  - opencv-python >= 4.5.0
+  - numpy >= 1.20.0
 
 A Dockerfile is provided as a reference for setting up the environment.
 
 ---
 
 ## Build
+
+  - Install Python dependencies:
+      ```bash
+      pip3 install grpcio grpcio-tools protobuf opencv-python numpy
+      ```
+      
+      Or use the provided requirements file:
+      ```bash
+      pip3 install -r requirements.txt
+      ```
 
   - Create a new workspace and clone the package:
       ```bash
